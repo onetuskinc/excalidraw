@@ -70,13 +70,8 @@
   &__footer {
     position: absolute;
     bottom: 0px;
-    :root[dir="ltr"] & {
-      right: 0;
-    }
-    :root[dir="rtl"] & {
-      left: 0;
-    }
-    width: 190px;
+    left: 0;
+    right: 0;
   }
 
   .zen-mode-transition {
