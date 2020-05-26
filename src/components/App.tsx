@@ -178,6 +178,8 @@ class App extends React.Component<any, AppState> {
   canvasOnlyActions = ["selectAll"];
 
   public state: AppState = {
+    canvasWidth: 800,
+    canvasHeight: 600,
     ...getDefaultAppState(),
     isLoading: true,
   };
@@ -197,13 +199,9 @@ class App extends React.Component<any, AppState> {
 
   public render() {
     const { zenModeEnabled } = this.state;
-    const canvasDOMWidth = window.innerWidth;
-    const canvasDOMHeight = window.innerHeight;
-
     const canvasScale = window.devicePixelRatio;
-
-    const canvasWidth = canvasDOMWidth * canvasScale;
-    const canvasHeight = canvasDOMHeight * canvasScale;
+    const canvasWidth = Number(this.state.canvasWidth) * canvasScale;
+    const canvasHeight = Number(this.state.canvasHeight) * canvasScale;
 
     return (
       <div className="container">
@@ -229,8 +227,8 @@ class App extends React.Component<any, AppState> {
           <canvas
             id="canvas"
             style={{
-              width: canvasDOMWidth,
-              height: canvasDOMHeight,
+              width: "100%",
+              height: "100%",
             }}
             width={canvasWidth}
             height={canvasHeight}
@@ -456,10 +454,16 @@ class App extends React.Component<any, AppState> {
     window.removeEventListener(EVENT.BEFORE_UNLOAD, this.beforeUnload);
   }
   private onResize = withBatchedUpdates(() => {
+    const canvasWidth = this.canvas?.clientWidth || 800;
+    const canvasHeight = this.canvas?.clientHeight || 600;
+
     globalSceneState
       .getElementsIncludingDeleted()
       .forEach((element) => invalidateShapeForElement(element));
-    this.setState({});
+    this.setState({
+      canvasWidth,
+      canvasHeight,
+    });
   });
 
   private beforeUnload = withBatchedUpdates((event: BeforeUnloadEvent) => {
