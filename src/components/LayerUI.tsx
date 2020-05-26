@@ -12,8 +12,7 @@ import Stack from "./Stack";
 import { FixedSideContainer } from "./FixedSideContainer";
 import { LockIcon } from "./LockIcon";
 import { ExportDialog, ExportCB } from "./ExportDialog";
-import { LanguageList } from "./LanguageList";
-import { t, languages, setLanguage } from "../i18n";
+import { t } from "../i18n";
 import { HintViewer } from "./HintViewer";
 import useIsMobile from "../is-mobile";
 
@@ -227,21 +226,6 @@ const LayerUI = ({
 
   const renderFooter = () => (
     <footer role="contentinfo" className="layer-ui__wrapper__footer">
-      <div
-        className={`zen-mode-transition ${
-          zenModeEnabled && "transition-right disable-pointerEvents"
-        }`}
-      >
-        <LanguageList
-          onChange={(lng) => {
-            setLanguage(lng);
-            setAppState({});
-          }}
-          languages={languages}
-          floating
-        />
-        {actionManager.renderAction("toggleShortcuts")}
-      </div>
       <button
         className={`disable-zen-mode ${
           zenModeEnabled && "disable-zen-mode--visible"
