@@ -15,6 +15,8 @@ export type Point = Readonly<RoughPoint>;
 
 export type AppState = {
   cursor: string;
+  canvasWidth: number;
+  canvasHeight: number;
   isLoading: boolean;
   errorMessage: string | null;
   draggingElement: NonDeletedExcalidrawElement | null;
