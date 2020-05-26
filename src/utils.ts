@@ -172,11 +172,13 @@ export const viewportCoordsToSceneCoords = (
   const bounds = canvas?.getBoundingClientRect() || { x: 0, y: 0 };
 
   const zoomOrigin = getZoomOrigin(canvas, scale);
-  const clientXWithZoom = zoomOrigin.x + (clientX - zoomOrigin.x) / zoom;
-  const clientYWithZoom = zoomOrigin.y + (clientY - zoomOrigin.y) / zoom;
+  const clientXWithZoom =
+    zoomOrigin.x + (clientX - bounds.x - zoomOrigin.x) / zoom;
+  const clientYWithZoom =
+    zoomOrigin.y + (clientY - bounds.y - zoomOrigin.y) / zoom;
 
-  const x = clientXWithZoom - scrollX - bounds.x;
-  const y = clientYWithZoom - scrollY - bounds.y;
+  const x = clientXWithZoom - scrollX;
+  const y = clientYWithZoom - scrollY;
 
   return { x, y };
 };
@@ -195,11 +197,12 @@ export const sceneCoordsToViewportCoords = (
   canvas: HTMLCanvasElement | null,
   scale: number,
 ) => {
+  const bounds = canvas?.getBoundingClientRect() || { x: 0, y: 0 };
   const zoomOrigin = getZoomOrigin(canvas, scale);
   const sceneXWithZoomAndScroll =
-    zoomOrigin.x - (zoomOrigin.x - sceneX - scrollX) * zoom;
+    zoomOrigin.x - (zoomOrigin.x - sceneX - scrollX + bounds.x) * zoom;
   const sceneYWithZoomAndScroll =
-    zoomOrigin.y - (zoomOrigin.y - sceneY - scrollY) * zoom;
+    zoomOrigin.y - (zoomOrigin.y - sceneY - scrollY + bounds.y) * zoom;
 
   const x = sceneXWithZoomAndScroll;
   const y = sceneYWithZoomAndScroll;
