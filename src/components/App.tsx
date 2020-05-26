@@ -369,6 +369,7 @@ class App extends React.Component<any, AppState> {
           value: this,
         },
       });
+      this.onResize();
     }
 
     this.removeSceneCallback = globalSceneState.addCallback(
