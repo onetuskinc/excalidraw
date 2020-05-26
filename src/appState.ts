@@ -8,6 +8,7 @@ export const DEFAULT_TEXT_ALIGN = "left";
 
 export const getDefaultAppState = (): AppState => {
   return {
+    cursor: "",
     canvasWidth: 800,
     canvasHeight: 600,
     isLoading: false,

@@ -1,6 +1,5 @@
 import { KEYS } from "../keys";
 import { isInvisiblySmallElement } from "../element";
-import { resetCursor } from "../utils";
 import React from "react";
 import { ToolButton } from "../components/ToolButton";
 import { done } from "../components/icons";
@@ -68,7 +67,7 @@ export const actionFinalize = register({
       }
     }
     if (!appState.elementLocked || !multiPointElement) {
-      resetCursor();
+      appState.cursor = "";
     }
     return {
       elements: newElements,

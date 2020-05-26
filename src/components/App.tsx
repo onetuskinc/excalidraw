@@ -65,10 +65,9 @@ import {
   isToolIcon,
   debounce,
   distance,
-  resetCursor,
   viewportCoordsToSceneCoords,
   sceneCoordsToViewportCoords,
-  setCursorForShape,
+  getCursorForShape,
 } from "../utils";
 import {
   KEYS,
@@ -204,7 +203,10 @@ class App extends React.Component<any, AppState> {
     const canvasHeight = Number(this.state.canvasHeight) * canvasScale;
 
     return (
-      <div className="container">
+      <div
+        className="excalidraw-container"
+        style={{ cursor: this.state.cursor.toString() }}
+      >
         <LayerUI
           canvas={this.canvas}
           appState={this.state}
@@ -1191,17 +1193,21 @@ class App extends React.Component<any, AppState> {
     }
     if (event.key === KEYS.SPACE && gesture.pointers.size === 0) {
       isHoldingSpace = true;
-      document.documentElement.style.cursor = CURSOR_TYPE.GRABBING;
+      this.setState({
+        cursor: CURSOR_TYPE.GRABBING,
+      });
     }
   });
 
   private onKeyUp = withBatchedUpdates((event: KeyboardEvent) => {
     if (event.key === KEYS.SPACE) {
       if (this.state.elementType === "selection") {
-        resetCursor();
+        this.setState({ cursor: "" });
       } else {
-        setCursorForShape(this.state.elementType);
-        this.setState({ selectedElementIds: {} });
+        this.setState({
+          selectedElementIds: {},
+          cursor: getCursorForShape(this.state.elementType),
+        });
       }
       isHoldingSpace = false;
     }
@@ -1209,7 +1215,7 @@ class App extends React.Component<any, AppState> {
 
   private selectShapeTool(elementType: AppState["elementType"]) {
     if (!isHoldingSpace) {
-      setCursorForShape(elementType);
+      this.setState({ cursor: getCursorForShape(elementType) });
     }
     if (isToolIcon(document.activeElement)) {
       document.activeElement.blur();
@@ -1312,7 +1318,7 @@ class App extends React.Component<any, AppState> {
           },
         }));
         if (this.state.elementLocked) {
-          setCursorForShape(this.state.elementType);
+          this.setState({ cursor: getCursorForShape(this.state.elementType) });
         }
         history.resumeRecording();
         resetSelection();
@@ -1448,7 +1454,7 @@ class App extends React.Component<any, AppState> {
       return;
     }
 
-    resetCursor();
+    this.setState({ cursor: "" });
 
     const { x, y } = viewportCoordsToSceneCoords(
       event,
@@ -1509,9 +1515,9 @@ class App extends React.Component<any, AppState> {
       isOverVerticalScrollBar || isOverHorizontalScrollBar;
     if (!this.state.draggingElement && !this.state.multiElement) {
       if (isOverScrollBar) {
-        resetCursor();
+        this.setState({ cursor: "" });
       } else {
-        setCursorForShape(this.state.elementType);
+        this.setState({ cursor: getCursorForShape(this.state.elementType) });
       }
     }
 
@@ -1528,7 +1534,7 @@ class App extends React.Component<any, AppState> {
       const { points, lastCommittedPoint } = multiElement;
       const lastPoint = points[points.length - 1];
 
-      setCursorForShape(this.state.elementType);
+      this.setState({ cursor: getCursorForShape(this.state.elementType) });
 
       if (lastPoint === lastCommittedPoint) {
         // if we haven't yet created a temp point and we're beyond commit-zone
@@ -1541,7 +1547,9 @@ class App extends React.Component<any, AppState> {
             points: [...points, [x - rx, y - ry]],
           });
         } else {
-          document.documentElement.style.cursor = CURSOR_TYPE.POINTER;
+          this.setState({
+            cursor: CURSOR_TYPE.POINTER,
+          });
           // in this branch, we're inside the commit zone, and no uncommitted
           //  point exists. Thus do nothing (don't add/remove points).
         }
@@ -1558,13 +1566,17 @@ class App extends React.Component<any, AppState> {
             lastCommittedPoint[1],
           ) < LINE_CONFIRM_THRESHOLD
         ) {
-          document.documentElement.style.cursor = CURSOR_TYPE.POINTER;
+          this.setState({
+            cursor: CURSOR_TYPE.POINTER,
+          });
           mutateElement(multiElement, {
             points: points.slice(0, -1),
           });
         } else {
           if (isPathALoop(points)) {
-            document.documentElement.style.cursor = CURSOR_TYPE.POINTER;
+            this.setState({
+              cursor: CURSOR_TYPE.POINTER,
+            });
           }
           // update last uncommitted point
           mutateElement(multiElement, {
@@ -1596,9 +1608,10 @@ class App extends React.Component<any, AppState> {
         event.pointerType,
       );
       if (elementWithResizeHandler && elementWithResizeHandler.resizeHandle) {
-        document.documentElement.style.cursor = getCursorForResizingElement(
-          elementWithResizeHandler,
-        );
+        this.setState({
+          cursor: getCursorForResizingElement(elementWithResizeHandler),
+        });
+
         return;
       }
     } else if (selectedElements.length > 1 && !isOverScrollBar) {
@@ -1610,9 +1623,12 @@ class App extends React.Component<any, AppState> {
           event.pointerType,
         );
         if (resizeHandle) {
-          document.documentElement.style.cursor = getCursorForResizingElement({
-            resizeHandle,
+          this.setState({
+            cursor: getCursorForResizingElement({
+              resizeHandle,
+            }),
           });
+
           return;
         }
       }
@@ -1625,12 +1641,15 @@ class App extends React.Component<any, AppState> {
       this.state.zoom,
     );
     if (this.state.elementType === "text") {
-      document.documentElement.style.cursor = isTextElement(hitElement)
-        ? CURSOR_TYPE.TEXT
-        : CURSOR_TYPE.CROSSHAIR;
+      this.setState({
+        cursor: isTextElement(hitElement)
+          ? CURSOR_TYPE.TEXT
+          : CURSOR_TYPE.CROSSHAIR,
+      });
     } else {
-      document.documentElement.style.cursor =
-        hitElement && !isOverScrollBar ? "move" : "";
+      this.setState({
+        cursor: hitElement && !isOverScrollBar ? "move" : "",
+      });
     }
   };
 
@@ -1666,8 +1685,9 @@ class App extends React.Component<any, AppState> {
 
       let nextPastePrevented = false;
       const isLinux = /Linux/.test(window.navigator.platform);
-
-      document.documentElement.style.cursor = CURSOR_TYPE.GRABBING;
+      this.setState({
+        cursor: CURSOR_TYPE.GRABBING,
+      });
       let { clientX: lastX, clientY: lastY } = event;
       const onPointerMove = withBatchedUpdates((event: PointerEvent) => {
         const deltaX = lastX - event.clientX;
@@ -1723,7 +1743,9 @@ class App extends React.Component<any, AppState> {
           lastPointerUp = null;
           isPanning = false;
           if (!isHoldingSpace) {
-            setCursorForShape(this.state.elementType);
+            this.setState({
+              cursor: getCursorForShape(this.state.elementType),
+            });
           }
           this.setState({
             cursorButton: "up",
@@ -1827,7 +1849,7 @@ class App extends React.Component<any, AppState> {
 
       const onPointerUp = withBatchedUpdates(() => {
         isDraggingScrollBar = false;
-        setCursorForShape(this.state.elementType);
+        this.setState({ cursor: getCursorForShape(this.state.elementType) });
         lastPointerUp = null;
         this.setState({
           cursorButton: "up",
@@ -1877,9 +1899,9 @@ class App extends React.Component<any, AppState> {
               : null,
           });
           resizeHandle = elementWithResizeHandler.resizeHandle;
-          document.documentElement.style.cursor = getCursorForResizingElement(
-            elementWithResizeHandler,
-          );
+          this.setState({
+            cursor: getCursorForResizingElement(elementWithResizeHandler),
+          });
           isResizingElements = true;
         }
       } else if (selectedElements.length > 1) {
@@ -1891,11 +1913,11 @@ class App extends React.Component<any, AppState> {
             event.pointerType,
           );
           if (resizeHandle) {
-            document.documentElement.style.cursor = getCursorForResizingElement(
-              {
+            this.setState({
+              cursor: getCursorForResizingElement({
                 resizeHandle,
-              },
-            );
+              }),
+            });
             isResizingElements = true;
           }
         }
@@ -1981,7 +2003,7 @@ class App extends React.Component<any, AppState> {
         centerIfPossible: !event.altKey,
       });
 
-      resetCursor();
+      this.setState({ cursor: "" });
       if (!this.state.elementLocked) {
         this.setState({
           elementType: "selection",
@@ -2003,6 +2025,7 @@ class App extends React.Component<any, AppState> {
               multiElement.points[multiElement.points.length - 1],
           });
           this.actionManager.executeAction(actionFinalize);
+          this.setState({});
           return;
         }
 
@@ -2020,6 +2043,7 @@ class App extends React.Component<any, AppState> {
           ) < LINE_CONFIRM_THRESHOLD
         ) {
           this.actionManager.executeAction(actionFinalize);
+          this.setState({});
           return;
         }
 
@@ -2035,7 +2059,9 @@ class App extends React.Component<any, AppState> {
           lastCommittedPoint:
             multiElement.points[multiElement.points.length - 1],
         });
-        document.documentElement.style.cursor = CURSOR_TYPE.POINTER;
+        this.setState({
+          cursor: CURSOR_TYPE.POINTER,
+        });
       } else {
         const element = newLinearElement({
           type: this.state.elementType,
@@ -2166,6 +2192,9 @@ class App extends React.Component<any, AppState> {
             event,
             x - resizeOffsetXY[0],
             y - resizeOffsetXY[1],
+            (cursor: string) => {
+              this.setState({ cursor });
+            },
           )
         ) {
           return;
@@ -2350,6 +2379,7 @@ class App extends React.Component<any, AppState> {
 
       if (draggingElement?.type === "draw") {
         this.actionManager.executeAction(actionFinalize);
+        this.setState({});
         return;
       }
       if (isLinearElement(draggingElement)) {
@@ -2375,7 +2405,7 @@ class App extends React.Component<any, AppState> {
           });
         } else if (draggingOccurred && !multiElement) {
           if (!elementLocked) {
-            resetCursor();
+            this.setState({ cursor: "" });
             this.setState((prevState) => ({
               draggingElement: null,
               elementType: "selection",
@@ -2472,8 +2502,8 @@ class App extends React.Component<any, AppState> {
       }
 
       if (!elementLocked) {
-        resetCursor();
         this.setState({
+          cursor: "",
           draggingElement: null,
           elementType: "selection",
         });

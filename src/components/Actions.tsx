@@ -6,7 +6,7 @@ import { hasBackground, hasStroke, hasText, getTargetElement } from "../scene";
 import { t } from "../i18n";
 import { SHAPES } from "../shapes";
 import { ToolButton } from "./ToolButton";
-import { capitalizeString, setCursorForShape } from "../utils";
+import { capitalizeString, getCursorForShape } from "../utils";
 import Stack from "./Stack";
 import useIsMobile from "../is-mobile";
 import { getNonDeletedElements } from "../element";
@@ -115,9 +115,8 @@ export const ShapesSwitcher = ({
               elementType: value,
               multiElement: null,
               selectedElementIds: {},
+              cursor: getCursorForShape(value),
             });
-            setCursorForShape(value);
-            setAppState({});
           }}
         ></ToolButton>
       );

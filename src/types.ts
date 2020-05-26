@@ -14,8 +14,7 @@ export type FlooredNumber = number & { _brand: "FlooredNumber" };
 export type Point = Readonly<RoughPoint>;
 
 export type AppState = {
-  canvasWidth: Number;
-  canvasHeight: Number;
+  cursor: string;
   isLoading: boolean;
   errorMessage: string | null;
   draggingElement: NonDeletedExcalidrawElement | null;

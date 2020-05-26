@@ -35,6 +35,7 @@ export const resizeElements = (
   event: PointerEvent, // XXX we want to make it independent?
   pointerX: number,
   pointerY: number,
+  setCursor: Function,
 ) => {
   if (selectedElements.length === 1) {
     const [element] = selectedElements;
@@ -74,11 +75,12 @@ export const resizeElements = (
     }
 
     // update cursor
-    // FIXME it is not very nice to have this here
-    document.documentElement.style.cursor = getCursorForResizingElement({
-      element,
-      resizeHandle,
-    });
+    setCursor(
+      getCursorForResizingElement({
+        element,
+        resizeHandle,
+      }),
+    );
 
     return true;
   } else if (

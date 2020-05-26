@@ -128,12 +128,11 @@ export const resetCursor = () => {
   document.documentElement.style.cursor = "";
 };
 
-export const setCursorForShape = (shape: string) => {
+export const getCursorForShape = (shape: string) => {
   if (shape === "selection") {
-    resetCursor();
-  } else {
-    document.documentElement.style.cursor = CURSOR_TYPE.CROSSHAIR;
+    return "";
   }
+  return CURSOR_TYPE.CROSSHAIR;
 };
 
 export const isFullScreen = () =>
