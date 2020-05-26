@@ -20,7 +20,6 @@ import { ExportType } from "../scene/types";
 import { MobileMenu } from "./MobileMenu";
 import { ZoomActions, SelectedShapeActions, ShapesSwitcher } from "./Actions";
 import { Section } from "./Section";
-import { RoomDialog } from "./RoomDialog";
 import { ErrorDialog } from "./ErrorDialog";
 import { ShortcutsDialog } from "./ShortcutsDialog";
 import { LoadingMessage } from "./LoadingMessage";
@@ -125,20 +124,9 @@ const LayerUI = ({
       <Island padding={4} style={{ zIndex: 1 }}>
         <Stack.Col gap={4}>
           <Stack.Row gap={1} justifyContent="space-between">
-            {actionManager.renderAction("loadScene")}
-            {actionManager.renderAction("saveScene")}
-            {renderExportDialog()}
             {actionManager.renderAction("clearCanvas")}
-            <RoomDialog
-              isCollaborating={appState.isCollaborating}
-              collaboratorCount={appState.collaborators.size}
-              username={appState.username}
-              onUsernameChange={onUsernameChange}
-              onRoomCreate={onRoomCreate}
-              onRoomDestroy={onRoomDestroy}
-            />
+            {actionManager.renderAction("changeViewBackgroundColor")}
           </Stack.Row>
-          {actionManager.renderAction("changeViewBackgroundColor")}
         </Stack.Col>
       </Island>
     </Section>
