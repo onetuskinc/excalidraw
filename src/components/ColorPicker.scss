@@ -133,6 +133,7 @@
 }
 
 .color-input-container {
+  margin-left: 4px;
   display: flex;
 }
 
@@ -161,7 +162,7 @@
   height: 1.875rem;
   width: 1.875rem;
   margin-inline-end: 0.25rem;
-  border: 1px solid $oc-gray-3;
+  border: 1px solid $oc-gray-3 !important;
   position: relative;
   overflow: hidden;
   background-color: transparent !important;
