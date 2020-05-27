@@ -196,12 +196,11 @@ export const sceneCoordsToViewportCoords = (
   canvas: HTMLCanvasElement | null,
   scale: number,
 ) => {
-  const bounds = canvas?.getBoundingClientRect() || { x: 0, y: 0 };
   const zoomOrigin = getZoomOrigin(canvas, scale);
   const sceneXWithZoomAndScroll =
-    zoomOrigin.x - (zoomOrigin.x - sceneX - scrollX + bounds.x) * zoom;
+    zoomOrigin.x - (zoomOrigin.x - sceneX - scrollX) * zoom;
   const sceneYWithZoomAndScroll =
-    zoomOrigin.y - (zoomOrigin.y - sceneY - scrollY + bounds.y) * zoom;
+    zoomOrigin.y - (zoomOrigin.y - sceneY - scrollY) * zoom;
 
   const x = sceneXWithZoomAndScroll;
   const y = sceneYWithZoomAndScroll;
