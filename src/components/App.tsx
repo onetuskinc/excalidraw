@@ -1372,7 +1372,7 @@ class App extends React.Component<any, AppState> {
       }
     }
 
-    resetCursor();
+    this.setState({ cursor: "" });
 
     this.startTextEditing({
       x: x,
