@@ -12,7 +12,6 @@ import { HintViewer } from "./HintViewer";
 import { calculateScrollCenter } from "../scene";
 import { SelectedShapeActions, ShapesSwitcher } from "./Actions";
 import { Section } from "./Section";
-import { RoomDialog } from "./RoomDialog";
 import { SCROLLBAR_WIDTH, SCROLLBAR_MARGIN } from "../scene/scrollbars";
 import { LockIcon } from "./LockIcon";
 import { LoadingMessage } from "./LoadingMessage";
@@ -23,9 +22,7 @@ type MobileMenuProps = {
   exportButton: React.ReactNode;
   setAppState: any;
   elements: readonly NonDeletedExcalidrawElement[];
-  onRoomCreate: () => void;
   onUsernameChange: (username: string) => void;
-  onRoomDestroy: () => void;
   onLockToggle: () => void;
 };
 
@@ -35,9 +32,7 @@ export const MobileMenu = ({
   actionManager,
   exportButton,
   setAppState,
-  onRoomCreate,
   onUsernameChange,
-  onRoomDestroy,
   onLockToggle,
 }: MobileMenuProps) => (
   <>
@@ -84,14 +79,6 @@ export const MobileMenu = ({
                 {actionManager.renderAction("saveScene")}
                 {exportButton}
                 {actionManager.renderAction("clearCanvas")}
-                <RoomDialog
-                  isCollaborating={appState.isCollaborating}
-                  collaboratorCount={appState.collaborators.size}
-                  username={appState.username}
-                  onUsernameChange={onUsernameChange}
-                  onRoomCreate={onRoomCreate}
-                  onRoomDestroy={onRoomDestroy}
-                />
                 {actionManager.renderAction("changeViewBackgroundColor")}
                 <fieldset>
                   <legend>{t("labels.language")}</legend>

@@ -34,9 +34,7 @@ interface LayerUIProps {
   canvas: HTMLCanvasElement | null;
   setAppState: any;
   elements: readonly NonDeletedExcalidrawElement[];
-  onRoomCreate: () => void;
   onUsernameChange: (username: string) => void;
-  onRoomDestroy: () => void;
   onLockToggle: () => void;
   zenModeEnabled: boolean;
   toggleZenMode: () => void;
@@ -48,9 +46,7 @@ const LayerUI = ({
   setAppState,
   canvas,
   elements,
-  onRoomCreate,
   onUsernameChange,
-  onRoomDestroy,
   onLockToggle,
   zenModeEnabled,
   toggleZenMode,
@@ -243,8 +239,6 @@ const LayerUI = ({
       exportButton={renderExportDialog()}
       setAppState={setAppState}
       onUsernameChange={onUsernameChange}
-      onRoomCreate={onRoomCreate}
-      onRoomDestroy={onRoomDestroy}
       onLockToggle={onLockToggle}
     />
   ) : (
