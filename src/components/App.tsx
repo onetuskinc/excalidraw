@@ -897,12 +897,11 @@ class App extends React.Component<any, AppState> {
     const data: SocketUpdateDataSource["MOUSE_LOCATION"] = {
       type: "MOUSE_LOCATION",
       payload: {
-        socketID: "FAKE",
-        // @todo JAMM userid
+        socketID: this.props.socketId,
         pointerCoords: payload.pointerCoords,
         button: payload.button || "up",
         selectedElementIds: this.state.selectedElementIds,
-        username: this.state.username,
+        username: this.props.username,
       },
     };
     this.sendData(data);
