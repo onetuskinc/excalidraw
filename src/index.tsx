@@ -13,9 +13,13 @@ import { globalSceneState } from "./scene";
 export default ({
   rootElement,
   sendData,
+  username,
+  socketId,
 }: {
   rootElement: HTMLElement;
   sendData: Function;
+  username: string;
+  socketId: string;
 }) => {
   const events = new EventEmitter();
 
@@ -24,7 +28,12 @@ export default ({
   ReactDOM.render(
     <TopErrorBoundary>
       <IsMobileProvider>
-        <App receiveData={events} sendData={sendData} />
+        <App
+          receiveData={events}
+          sendData={sendData}
+          username={username}
+          socketId={socketId}
+        />
       </IsMobileProvider>
     </TopErrorBoundary>,
     rootElement,
