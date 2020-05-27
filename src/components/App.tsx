@@ -1106,22 +1106,18 @@ class App extends React.Component<any, AppState> {
     pointerCoords: SocketUpdateDataSource["MOUSE_LOCATION"]["payload"]["pointerCoords"];
     button: SocketUpdateDataSource["MOUSE_LOCATION"]["payload"]["button"];
   }) => {
-    if (this.portal.socket?.id) {
-      const data: SocketUpdateDataSource["MOUSE_LOCATION"] = {
-        type: "MOUSE_LOCATION",
-        payload: {
-          socketID: this.portal.socket.id,
-          pointerCoords: payload.pointerCoords,
-          button: payload.button || "up",
-          selectedElementIds: this.state.selectedElementIds,
-          username: this.state.username,
-        },
-      };
-      return this.portal._broadcastSocketData(
-        data as SocketUpdateData,
-        true, // volatile
-      );
-    }
+    const data: SocketUpdateDataSource["MOUSE_LOCATION"] = {
+      type: "MOUSE_LOCATION",
+      payload: {
+        socketID: "FAKE",
+        // @todo JAMM userid
+        pointerCoords: payload.pointerCoords,
+        button: payload.button || "up",
+        selectedElementIds: this.state.selectedElementIds,
+        username: this.state.username,
+      },
+    };
+    this.sendData(data);
   };
 
   // maybe should move to Portal
