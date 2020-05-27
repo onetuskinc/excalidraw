@@ -8,6 +8,7 @@ import App from "./components/App";
 import "./css/styles.scss";
 
 import { EventEmitter } from "events";
+import { globalSceneState } from "./scene";
 
 export default ({
   rootElement,
@@ -37,6 +38,8 @@ export default ({
       events.emit("resize");
     },
     destroy() {
+      events.removeAllListeners();
+      globalSceneState.replaceAllElements([]);
       ReactDOM.unmountComponentAtNode(rootElement);
     },
   };
