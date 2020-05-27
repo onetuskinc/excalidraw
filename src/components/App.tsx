@@ -41,12 +41,7 @@ import {
   isSomeElementSelected,
   calculateScrollCenter,
 } from "../scene";
-import {
-  saveToLocalStorage,
-  loadFromBlob,
-  SocketUpdateDataSource,
-  exportCanvas,
-} from "../data";
+import { loadFromBlob, SocketUpdateDataSource, exportCanvas } from "../data";
 
 import { renderScene } from "../renderer";
 import { AppState, GestureEvent, Gesture } from "../types";
@@ -404,8 +399,6 @@ class App extends React.Component<any, AppState> {
 
   private onBlur = withBatchedUpdates(() => {
     isHoldingSpace = false;
-    this.saveDebounced();
-    this.saveDebounced.flush();
   });
 
   private onUnload = () => {
@@ -641,7 +634,6 @@ class App extends React.Component<any, AppState> {
     if (this.state.scrolledOutside !== scrolledOutside) {
       this.setState({ scrolledOutside: scrolledOutside });
     }
-    this.saveDebounced();
 
     if (
       getDrawingVersion(globalSceneState.getElementsIncludingDeleted()) >
@@ -2709,13 +2701,6 @@ class App extends React.Component<any, AppState> {
 
   private resetShouldCacheIgnoreZoomDebounced = debounce(() => {
     this.setState({ shouldCacheIgnoreZoom: false });
-  }, 300);
-
-  private saveDebounced = debounce(() => {
-    saveToLocalStorage(
-      globalSceneState.getElementsIncludingDeleted(),
-      this.state,
-    );
   }, 300);
 }
 
