@@ -275,6 +275,29 @@ class App extends React.Component<any, AppState> {
         updateScene(data);
       });
 
+      props.receiveData.on("mouse", (data: any) => {
+        const {
+          socketID,
+          pointerCoords,
+          button,
+          username,
+          selectedElementIds,
+        } = data.payload;
+
+        this.setState((state) => {
+          if (!state.collaborators.has(socketID)) {
+            state.collaborators.set(socketID, {});
+          }
+          const user = state.collaborators.get(socketID)!;
+          user.pointer = pointerCoords;
+          user.button = button;
+          user.selectedElementIds = selectedElementIds;
+          user.username = username;
+          state.collaborators.set(socketID, user);
+          return state;
+        });
+      });
+
       props.receiveData.on("resize", () => {
         this.onResize();
       });
