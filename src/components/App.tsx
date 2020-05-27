@@ -334,7 +334,6 @@ class App extends React.Component<any, AppState> {
           actionManager={this.actionManager}
           elements={globalSceneState.getElements()}
           onUsernameChange={(username) => {
-            saveUsernameToLocalStorage(username);
             this.setState({
               username,
             });
@@ -958,16 +957,6 @@ class App extends React.Component<any, AppState> {
       cursorY = event.y;
     },
   );
-
-  restoreUserName() {
-    const username = restoreUsernameFromLocalStorage();
-
-    if (username !== null) {
-      this.setState({
-        username,
-      });
-    }
-  }
 
   // Input handling
 
