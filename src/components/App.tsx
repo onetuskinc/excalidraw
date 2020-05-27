@@ -45,7 +45,6 @@ import {
 import {
   decryptAESGEM,
   saveToLocalStorage,
-  loadScene,
   loadFromBlob,
   SOCKET_SERVER,
   SocketUpdateDataSource,
@@ -434,36 +433,8 @@ class App extends React.Component<any, AppState> {
   };
 
   private initializeScene = async () => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const id = searchParams.get("id");
-    const jsonMatch = window.location.hash.match(
-      /^#json=([0-9]+),([a-zA-Z0-9_-]+)$/,
-    );
-
-    const isCollaborationScene = getCollaborationLinkData(window.location.href);
-
-    if (!isCollaborationScene) {
-      let scene: ResolutionType<typeof loadScene> | undefined;
-      // Backwards compatibility with legacy url format
-      if (id) {
-        scene = await loadScene(id);
-      } else if (jsonMatch) {
-        scene = await loadScene(jsonMatch[1], jsonMatch[2]);
-      } else {
-        scene = await loadScene(null);
-      }
-      if (scene) {
-        this.syncActionResult(scene);
-      }
-    }
-
     if (this.state.isLoading) {
       this.setState({ isLoading: false });
-    }
-
-    // run this last else the `isLoading` state
-    if (isCollaborationScene) {
-      this.initializeSocketClient({ showLoadingState: true });
     }
   };
 
