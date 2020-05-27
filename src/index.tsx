@@ -7,25 +7,37 @@ import App from "./components/App";
 
 import "./css/styles.scss";
 
-export default ({ rootElement }: { rootElement: HTMLElement }) => {
+import { EventEmitter } from "events";
+
+export default ({
+  rootElement,
+  sendData,
+}: {
+  rootElement: HTMLElement;
+  sendData: Function;
+}) => {
+  const events = new EventEmitter();
+
   // Block pinch-zooming on iOS outside of the content area
-  document.addEventListener(
-    "touchmove",
-    (event) => {
-      // @ts-ignore
-      if (event.scale !== 1) {
-        event.preventDefault();
-      }
-    },
-    { passive: false },
-  );
 
   ReactDOM.render(
     <TopErrorBoundary>
       <IsMobileProvider>
-        <App />
+        <App receiveData={events} sendData={sendData} />
       </IsMobileProvider>
     </TopErrorBoundary>,
     rootElement,
   );
+
+  return {
+    send(...args: any[]) {
+      events.emit("data", ...args);
+    },
+    resize() {
+      events.emit("resize");
+    },
+    destroy() {
+      ReactDOM.unmountComponentAtNode(rootElement);
+    },
+  };
 };
