@@ -34,6 +34,9 @@ export default ({
     send(...args: any[]) {
       events.emit("data", ...args);
     },
+    mouse(...args: any[]) {
+      events.emit("mouse", ...args);
+    },
     resize() {
       events.emit("resize");
     },
