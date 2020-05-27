@@ -4,7 +4,7 @@ import socketIOClient from "socket.io-client";
 import rough from "roughjs/bin/rough";
 import { RoughCanvas } from "roughjs/bin/canvas";
 import { simplify, Point } from "points-on-curve";
-import { FlooredNumber, SocketUpdateData } from "../types";
+import { FlooredNumber } from "../types";
 
 import {
   newElement,
@@ -1158,7 +1158,7 @@ class App extends React.Component<any, AppState> {
         syncableElement.version,
       );
     }
-    return this.portal._broadcastSocketData(data as SocketUpdateData);
+    this.sendData(data);
   };
 
   private onSceneUpdated = () => {
@@ -2820,9 +2820,8 @@ class App extends React.Component<any, AppState> {
       // sometimes the pointer goes off screen
       return;
     }
-    this.portal.socket &&
-      // do not broadcast when more than 1 pointer since that shows flickering on the other side
-      gesture.pointers.size < 2 &&
+    // do not broadcast when more than 1 pointer since that shows flickering on the other side
+    gesture.pointers.size < 2 &&
       this.broadcastMouseLocation({
         pointerCoords,
         button,
