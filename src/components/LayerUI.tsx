@@ -24,7 +24,6 @@ import { ErrorDialog } from "./ErrorDialog";
 import { ShortcutsDialog } from "./ShortcutsDialog";
 import { LoadingMessage } from "./LoadingMessage";
 import { CLASSES } from "../constants";
-import { shield } from "./icons";
 
 import "./LayerUI.scss";
 
@@ -52,22 +51,6 @@ const LayerUI = ({
   toggleZenMode,
 }: LayerUIProps) => {
   const isMobile = useIsMobile();
-
-  const renderEncryptedIcon = () => (
-    <a
-      className={`encrypted-icon tooltip zen-mode-visibility ${
-        zenModeEnabled ? "zen-mode-visibility--hidden" : ""
-      }`}
-      href="https://blog.excalidraw.com/end-to-end-encryption/"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      <span className="tooltip-text" dir="auto">
-        {t("encrypted.tooltip")}
-      </span>
-      {shield}
-    </a>
-  );
 
   const renderExportDialog = () => {
     const createExporter = (type: ExportType): ExportCB => (
@@ -199,7 +182,6 @@ const LayerUI = ({
                     zoom={appState.zoom}
                   />
                 </Island>
-                {renderEncryptedIcon()}
               </Section>
             </Stack.Col>
           </div>
