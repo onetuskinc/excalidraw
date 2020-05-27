@@ -111,10 +111,6 @@ import { unstable_batchedUpdates } from "react-dom";
 import { SceneStateCallbackRemover } from "../scene/globalScene";
 import { isLinearElement } from "../element/typeChecks";
 import { actionFinalize } from "../actions";
-import {
-  restoreUsernameFromLocalStorage,
-  saveUsernameToLocalStorage,
-} from "../data/localStorage";
 
 import throttle from "lodash.throttle";
 import {
