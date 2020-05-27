@@ -1,9 +1,8 @@
 import React from "react";
 import { AppState } from "../types";
 import { ActionManager } from "../actions/manager";
-import { t, setLanguage } from "../i18n";
+import { t } from "../i18n";
 import Stack from "./Stack";
-import { LanguageList } from "./LanguageList";
 import { showSelectedShapeActions } from "../element";
 import { NonDeletedExcalidrawElement } from "../element/types";
 import { FixedSideContainer } from "./FixedSideContainer";
@@ -75,20 +74,8 @@ export const MobileMenu = ({
           <Section className="App-mobile-menu" heading="canvasActions">
             <div className="panelColumn">
               <Stack.Col gap={4}>
-                {actionManager.renderAction("loadScene")}
-                {actionManager.renderAction("saveScene")}
-                {exportButton}
                 {actionManager.renderAction("clearCanvas")}
                 {actionManager.renderAction("changeViewBackgroundColor")}
-                <fieldset>
-                  <legend>{t("labels.language")}</legend>
-                  <LanguageList
-                    onChange={(lng) => {
-                      setLanguage(lng);
-                      setAppState({});
-                    }}
-                  />
-                </fieldset>
               </Stack.Col>
             </div>
           </Section>
