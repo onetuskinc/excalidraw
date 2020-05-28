@@ -11,7 +11,7 @@ export const serializeAsJSON = (
   JSON.stringify(
     {
       type: "excalidraw",
-      version: 1,
+      version: 2,
       source: window.location.origin,
       elements: elements.filter((element) => !element.isDeleted),
       appState: cleanAppStateForExport(appState),

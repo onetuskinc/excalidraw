@@ -77,7 +77,7 @@ import { actions } from "../actions/register";
 
 import { ActionResult } from "../actions/types";
 import { getDefaultAppState } from "../appState";
-import { t } from "../i18n";
+import { t, getLanguage } from "../i18n";
 
 import {
   copyToAppClipboard,
@@ -345,6 +345,7 @@ class App extends React.Component<any, AppState> {
           onLockToggle={this.toggleLock}
           zenModeEnabled={zenModeEnabled}
           toggleZenMode={this.toggleZenMode}
+          lng={getLanguage().lng}
         />
         <main>
           <canvas
@@ -845,7 +846,8 @@ class App extends React.Component<any, AppState> {
       roughness: this.state.currentItemRoughness,
       opacity: this.state.currentItemOpacity,
       text: text,
-      font: this.state.currentItemFont,
+      fontSize: this.state.currentItemFontSize,
+      fontFamily: this.state.currentItemFontFamily,
       textAlign: this.state.currentItemTextAlign,
     });
 
@@ -1181,7 +1183,8 @@ class App extends React.Component<any, AppState> {
       initText: element.text,
       strokeColor: element.strokeColor,
       opacity: element.opacity,
-      font: element.font,
+      fontSize: element.fontSize,
+      fontFamily: element.fontFamily,
       angle: element.angle,
       textAlign: element.textAlign,
       zoom: this.state.zoom,
@@ -1262,7 +1265,8 @@ class App extends React.Component<any, AppState> {
             roughness: this.state.currentItemRoughness,
             opacity: this.state.currentItemOpacity,
             text: "",
-            font: this.state.currentItemFont,
+            fontSize: this.state.currentItemFontSize,
+            fontFamily: this.state.currentItemFontFamily,
             textAlign: this.state.currentItemTextAlign,
           });
 
