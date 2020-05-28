@@ -11,7 +11,7 @@ type Props = {
 
 export class ProjectName extends Component<Props> {
   private handleFocus = (event: React.FocusEvent<HTMLElement>) => {
-    selectNode(event.currentTarget);
+    selectNode(event.currentTarget, window);
   };
 
   private handleBlur = (event: React.FocusEvent<HTMLElement>) => {

@@ -10,8 +10,9 @@ import { isPathALoop } from "../math";
 
 export const actionFinalize = register({
   name: "finalize",
-  perform: (elements, appState) => {
+  perform: (elements, appState, fromData, window) => {
     let newElements = elements;
+
     if (window.document.activeElement instanceof HTMLElement) {
       window.document.activeElement.blur();
     }

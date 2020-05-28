@@ -49,7 +49,7 @@ export const actionClearCanvas = register({
       commitToHistory: true,
     };
   },
-  PanelComponent: ({ updateData }) => (
+  PanelComponent: ({ updateData, window }) => (
     <ToolButton
       type="button"
       icon={trash}

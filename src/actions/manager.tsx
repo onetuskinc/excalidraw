@@ -10,6 +10,7 @@ import { ExcalidrawElement } from "../element/types";
 import { AppState } from "../types";
 import { t } from "../i18n";
 import { globalSceneState } from "../scene";
+import useGetWindow from "../window";
 
 export class ActionManager implements ActionsManagerInterface {
   actions = {} as ActionsManagerInterface["actions"];
@@ -63,6 +64,7 @@ export class ActionManager implements ActionsManagerInterface {
         this.getElementsIncludingDeleted(),
         this.getAppState(),
         null,
+        useGetWindow(),
       ),
     );
     return true;
@@ -74,11 +76,13 @@ export class ActionManager implements ActionsManagerInterface {
         this.getElementsIncludingDeleted(),
         this.getAppState(),
         null,
+        useGetWindow(),
       ),
     );
   }
 
   getContextMenuItems(actionFilter: ActionFilterFn = (action) => action) {
+    const window = useGetWindow();
     return Object.values(this.actions)
       .filter(actionFilter)
       .filter((action) => "contextItemLabel" in action)
@@ -95,6 +99,7 @@ export class ActionManager implements ActionsManagerInterface {
               this.getElementsIncludingDeleted(),
               this.getAppState(),
               null,
+              window,
             ),
           );
         },
@@ -102,6 +107,7 @@ export class ActionManager implements ActionsManagerInterface {
   }
 
   renderAction = (name: ActionName) => {
+    const window = useGetWindow();
     if (this.actions[name] && "PanelComponent" in this.actions[name]) {
       const action = this.actions[name];
       const PanelComponent = action.PanelComponent!;
@@ -111,6 +117,7 @@ export class ActionManager implements ActionsManagerInterface {
             this.getElementsIncludingDeleted(),
             this.getAppState(),
             formState,
+            window,
           ),
         );
       };
@@ -120,6 +127,7 @@ export class ActionManager implements ActionsManagerInterface {
           elements={this.getElementsIncludingDeleted()}
           appState={this.getAppState()}
           updateData={updateData}
+          window={useGetWindow()}
         />
       );
     }

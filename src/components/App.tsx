@@ -318,7 +318,7 @@ class App extends React.Component<any, AppState> {
 
   public render() {
     const { zenModeEnabled } = this.state;
-    const canvasScale = window.devicePixelRatio;
+    const canvasScale = this.props.window.devicePixelRatio;
     const canvasWidth = Number(this.state.canvasWidth) * canvasScale;
     const canvasHeight = Number(this.state.canvasHeight) * canvasScale;
 
@@ -450,7 +450,7 @@ class App extends React.Component<any, AppState> {
       process.env.NODE_ENV === "development"
     ) {
       const setState = this.setState.bind(this);
-      Object.defineProperties(window.h, {
+      Object.defineProperties(this.props.window.h, {
         state: {
           configurable: true,
           get: () => {
@@ -474,6 +474,9 @@ class App extends React.Component<any, AppState> {
     this.removeSceneCallback = globalSceneState.addCallback(
       this.onSceneUpdated,
     );
+
+    const window = this.props.window;
+    const document = window.document;
 
     document.addEventListener(EVENT.COPY, this.onCopy);
     document.addEventListener(EVENT.PASTE, this.pasteFromClipboard);
@@ -518,6 +521,8 @@ class App extends React.Component<any, AppState> {
   public componentWillUnmount() {
     this.unmounted = true;
     this.removeSceneCallback!();
+    const window = this.props.window;
+    const document = window.document;
 
     document.removeEventListener(EVENT.COPY, this.onCopy);
     document.removeEventListener(EVENT.PASTE, this.pasteFromClipboard);
@@ -610,7 +615,7 @@ class App extends React.Component<any, AppState> {
         },
         this.state,
         this.canvas,
-        window.devicePixelRatio,
+        this.props.window.devicePixelRatio,
       );
       cursorButton[socketID] = user.button;
     });
@@ -627,7 +632,7 @@ class App extends React.Component<any, AppState> {
       }),
       this.state,
       this.state.selectionElement,
-      window.devicePixelRatio,
+      this.props.window.devicePixelRatio,
       this.rc!,
       this.canvas!,
       {
@@ -754,8 +759,11 @@ class App extends React.Component<any, AppState> {
   private pasteFromClipboard = withBatchedUpdates(
     async (event: ClipboardEvent | null) => {
       // #686
-      const target = document.activeElement;
-      const elementUnderCursor = document.elementFromPoint(cursorX, cursorY);
+      const target = this.props.window.document.activeElement;
+      const elementUnderCursor = this.props.window.document.elementFromPoint(
+        cursorX,
+        cursorY,
+      );
       if (
         // if no ClipboardEvent supplied, assume we're pasting via contextMenu
         //  thus these checks don't make sense
@@ -788,7 +796,7 @@ class App extends React.Component<any, AppState> {
       { clientX: cursorX, clientY: cursorY },
       this.state,
       this.canvas,
-      window.devicePixelRatio,
+      this.props.window.devicePixelRatio,
     );
 
     const dx = x - elementsCenterX;
@@ -820,7 +828,7 @@ class App extends React.Component<any, AppState> {
       { clientX: cursorX, clientY: cursorY },
       this.state,
       this.canvas,
-      window.devicePixelRatio,
+      this.props.window.devicePixelRatio,
     );
 
     const element = newTextElement({
@@ -1084,8 +1092,8 @@ class App extends React.Component<any, AppState> {
     if (!isHoldingSpace) {
       this.setState({ cursor: getCursorForShape(elementType) });
     }
-    if (isToolIcon(document.activeElement)) {
-      document.activeElement.blur();
+    if (isToolIcon(this.props.window.document.activeElement)) {
+      this.props.window.document.activeElement.blur();
     }
     if (elementType !== "selection") {
       this.setState({
@@ -1274,7 +1282,7 @@ class App extends React.Component<any, AppState> {
         { sceneX: centerElementX, sceneY: centerElementY },
         this.state,
         this.canvas,
-        window.devicePixelRatio,
+        this.props.window.devicePixelRatio,
       );
 
       textX = centerElementXInViewport;
@@ -1297,7 +1305,7 @@ class App extends React.Component<any, AppState> {
           y,
           this.state,
           this.canvas,
-          window.devicePixelRatio,
+          this.props.window.devicePixelRatio,
         );
 
         if (snappedToCenterPosition) {
@@ -1337,7 +1345,7 @@ class App extends React.Component<any, AppState> {
       event,
       this.state,
       this.canvas,
-      window.devicePixelRatio,
+      this.props.window.devicePixelRatio,
     );
 
     const selectedGroupIds = getSelectedGroupIds(this.state);
@@ -1436,7 +1444,7 @@ class App extends React.Component<any, AppState> {
       event,
       this.state,
       this.canvas,
-      window.devicePixelRatio,
+      this.props.window.devicePixelRatio,
     );
     if (this.state.multiElement) {
       const { multiElement } = this.state;
@@ -1595,7 +1603,7 @@ class App extends React.Component<any, AppState> {
       isPanning = true;
 
       let nextPastePrevented = false;
-      const isLinux = /Linux/.test(window.navigator.platform);
+      const isLinux = /Linux/.test(this.props.window.navigator.platform);
       this.setState({
         cursor: CURSOR_TYPE.GRABBING,
       });
@@ -1619,7 +1627,10 @@ class App extends React.Component<any, AppState> {
 
           /* Prevent the next paste event */
           const preventNextPaste = (event: ClipboardEvent) => {
-            document.body.removeEventListener(EVENT.PASTE, preventNextPaste);
+            this.props.window.document.body.removeEventListener(
+              EVENT.PASTE,
+              preventNextPaste,
+            );
             event.stopPropagation();
           };
 
@@ -1631,13 +1642,22 @@ class App extends React.Component<any, AppState> {
            */
           const enableNextPaste = () => {
             setTimeout(() => {
-              document.body.removeEventListener(EVENT.PASTE, preventNextPaste);
-              window.removeEventListener(EVENT.POINTER_UP, enableNextPaste);
+              this.props.window.document.body.removeEventListener(
+                EVENT.PASTE,
+                preventNextPaste,
+              );
+              this.props.window.removeEventListener(
+                EVENT.POINTER_UP,
+                enableNextPaste,
+              );
             }, 100);
           };
 
-          document.body.addEventListener(EVENT.PASTE, preventNextPaste);
-          window.addEventListener(EVENT.POINTER_UP, enableNextPaste);
+          this.props.window.document.body.addEventListener(
+            EVENT.PASTE,
+            preventNextPaste,
+          );
+          this.props.window.addEventListener(EVENT.POINTER_UP, enableNextPaste);
         }
 
         this.setState({
@@ -1662,16 +1682,19 @@ class App extends React.Component<any, AppState> {
             cursorButton: "up",
           });
           this.savePointer(event.clientX, event.clientY, "up");
-          window.removeEventListener(EVENT.POINTER_MOVE, onPointerMove);
-          window.removeEventListener(EVENT.POINTER_UP, teardown);
-          window.removeEventListener(EVENT.BLUR, teardown);
+          this.props.window.removeEventListener(
+            EVENT.POINTER_MOVE,
+            onPointerMove,
+          );
+          this.props.window.removeEventListener(EVENT.POINTER_UP, teardown);
+          this.props.window.removeEventListener(EVENT.BLUR, teardown);
         }),
       );
-      window.addEventListener(EVENT.BLUR, teardown);
-      window.addEventListener(EVENT.POINTER_MOVE, onPointerMove, {
+      this.props.window.addEventListener(EVENT.BLUR, teardown);
+      this.props.window.addEventListener(EVENT.POINTER_MOVE, onPointerMove, {
         passive: true,
       });
-      window.addEventListener(EVENT.POINTER_UP, teardown);
+      this.props.window.addEventListener(EVENT.POINTER_UP, teardown);
       return;
     }
 
@@ -1701,8 +1724,8 @@ class App extends React.Component<any, AppState> {
     // Preventing the event above disables default behavior
     //  of defocusing potentially focused element, which is what we
     //  want when clicking inside the canvas.
-    if (document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur();
+    if (this.props.window.document.activeElement instanceof HTMLElement) {
+      this.props.window.document.activeElement.blur();
     }
 
     // don't select while panning
@@ -1720,7 +1743,7 @@ class App extends React.Component<any, AppState> {
       event,
       this.state,
       this.canvas,
-      window.devicePixelRatio,
+      this.props.window.devicePixelRatio,
     );
     let lastX = x;
     let lastY = y;
@@ -1766,14 +1789,17 @@ class App extends React.Component<any, AppState> {
           cursorButton: "up",
         });
         this.savePointer(event.clientX, event.clientY, "up");
-        window.removeEventListener(EVENT.POINTER_MOVE, onPointerMove);
-        window.removeEventListener(EVENT.POINTER_UP, onPointerUp);
+        this.props.window.removeEventListener(
+          EVENT.POINTER_MOVE,
+          onPointerMove,
+        );
+        this.props.window.removeEventListener(EVENT.POINTER_UP, onPointerUp);
       });
 
       lastPointerUp = onPointerUp;
 
-      window.addEventListener(EVENT.POINTER_MOVE, onPointerMove);
-      window.addEventListener(EVENT.POINTER_UP, onPointerUp);
+      this.props.window.addEventListener(EVENT.POINTER_MOVE, onPointerMove);
+      this.props.window.addEventListener(EVENT.POINTER_UP, onPointerUp);
       return;
     }
 
@@ -1936,7 +1962,7 @@ class App extends React.Component<any, AppState> {
         event,
         this.state,
         this.canvas,
-        window.devicePixelRatio,
+        this.props.window.devicePixelRatio,
       );
 
       this.startTextEditing({
@@ -2101,7 +2127,7 @@ class App extends React.Component<any, AppState> {
         event,
         this.state,
         this.canvas,
-        window.devicePixelRatio,
+        this.props.window.devicePixelRatio,
       );
 
       // for arrows/lines, don't start dragging until a given threshold
@@ -2158,7 +2184,7 @@ class App extends React.Component<any, AppState> {
             event,
             this.state,
             this.canvas,
-            window.devicePixelRatio,
+            this.props.window.devicePixelRatio,
           );
 
           selectedElements.forEach((element) => {
@@ -2333,8 +2359,8 @@ class App extends React.Component<any, AppState> {
 
       lastPointerUp = null;
 
-      window.removeEventListener(EVENT.POINTER_MOVE, onPointerMove);
-      window.removeEventListener(EVENT.POINTER_UP, onPointerUp);
+      this.props.window.removeEventListener(EVENT.POINTER_MOVE, onPointerMove);
+      this.props.window.removeEventListener(EVENT.POINTER_UP, onPointerUp);
 
       if (draggingElement?.type === "draw") {
         this.actionManager.executeAction(actionFinalize);
@@ -2350,7 +2376,7 @@ class App extends React.Component<any, AppState> {
             childEvent,
             this.state,
             this.canvas,
-            window.devicePixelRatio,
+            this.props.window.devicePixelRatio,
           );
           mutateElement(draggingElement, {
             points: [
@@ -2484,8 +2510,8 @@ class App extends React.Component<any, AppState> {
 
     lastPointerUp = onPointerUp;
 
-    window.addEventListener(EVENT.POINTER_MOVE, onPointerMove);
-    window.addEventListener(EVENT.POINTER_UP, onPointerUp);
+    this.props.window.addEventListener(EVENT.POINTER_MOVE, onPointerMove);
+    this.props.window.addEventListener(EVENT.POINTER_UP, onPointerUp);
   };
 
   private handleCanvasRef = (canvas: HTMLCanvasElement) => {
@@ -2542,7 +2568,7 @@ class App extends React.Component<any, AppState> {
       event,
       this.state,
       this.canvas,
-      window.devicePixelRatio,
+      this.props.window.devicePixelRatio,
     );
 
     const elements = globalSceneState.getElements();
@@ -2556,7 +2582,7 @@ class App extends React.Component<any, AppState> {
     if (!element) {
       ContextMenu.push({
         options: [
-          navigator.clipboard && {
+          this.props.window.navigator.clipboard && {
             label: t("labels.paste"),
             action: () => this.pasteFromClipboard(null),
           },
@@ -2586,11 +2612,11 @@ class App extends React.Component<any, AppState> {
 
     ContextMenu.push({
       options: [
-        navigator.clipboard && {
+        this.props.window.navigator.clipboard && {
           label: t("labels.copy"),
           action: this.copyAll,
         },
-        navigator.clipboard && {
+        this.props.window.navigator.clipboard && {
           label: t("labels.paste"),
           action: () => this.pasteFromClipboard(null),
         },
@@ -2692,7 +2718,7 @@ class App extends React.Component<any, AppState> {
       { clientX: x, clientY: y },
       this.state,
       this.canvas,
-      window.devicePixelRatio,
+      this.props.window.devicePixelRatio,
     );
 
     if (isNaN(pointerCoords.x) || isNaN(pointerCoords.y)) {

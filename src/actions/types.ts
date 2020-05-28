@@ -13,6 +13,7 @@ type ActionFn = (
   elements: readonly ExcalidrawElement[],
   appState: AppState,
   formData: any,
+  window: Window,
 ) => ActionResult;
 
 export type UpdaterFn = (res: ActionResult, commitToHistory?: boolean) => void;
@@ -65,6 +66,7 @@ export interface Action {
     elements: readonly ExcalidrawElement[];
     appState: AppState;
     updateData: (formData?: any) => void;
+    window: Window;
   }>;
   perform: ActionFn;
   keyPriority?: number;
