@@ -4,8 +4,10 @@ const context = React.createContext(false);
 
 export const IsMobileProvider = ({
   children,
+  window,
 }: {
   children: React.ReactNode;
+  window: Window;
 }) => {
   const query = useRef<MediaQueryList>();
   if (!query.current) {
