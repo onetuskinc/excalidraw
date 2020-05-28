@@ -105,10 +105,10 @@ export const debounce = <T extends any[]>(
   return ret;
 };
 
-export const selectNode = (node: Element) => {
+export const selectNode = (node: Element, window: Window) => {
   const selection = window.getSelection();
   if (selection) {
-    const range = document.createRange();
+    const range = window.document.createRange();
     range.selectNodeContents(node);
     selection.removeAllRanges();
     selection.addRange(range);
