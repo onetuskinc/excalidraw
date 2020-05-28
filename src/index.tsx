@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 
 import { TopErrorBoundary } from "./components/TopErrorBoundary";
 import { IsMobileProvider } from "./is-mobile";
+import { WindowProvider } from "./window";
 import App from "./components/App";
 
 import "./css/styles.scss";
@@ -23,18 +24,23 @@ export default ({
 }) => {
   const events = new EventEmitter();
 
+  const win = rootElement.ownerDocument?.defaultView || window;
+
   // Block pinch-zooming on iOS outside of the content area
 
   ReactDOM.render(
     <TopErrorBoundary>
-      <IsMobileProvider>
-        <App
-          receiveData={events}
-          sendData={sendData}
-          username={username}
-          socketId={socketId}
-        />
-      </IsMobileProvider>
+      <WindowProvider window={win}>
+        <IsMobileProvider window={win}>
+          <App
+            receiveData={events}
+            sendData={sendData}
+            username={username}
+            socketId={socketId}
+            window={win}
+          />
+        </IsMobileProvider>
+      </WindowProvider>
     </TopErrorBoundary>,
     rootElement,
   );
