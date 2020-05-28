@@ -25,6 +25,9 @@ export default ({
   const events = new EventEmitter();
 
   const win = rootElement.ownerDocument?.defaultView || window;
+  if (!rootElement.ownerDocument?.defaultView) {
+    console.warn("ExcaliDraw is falling back to the global window object");
+  }
 
   // Block pinch-zooming on iOS outside of the content area
 

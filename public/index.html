@@ -121,12 +121,40 @@
       gtag("config", "UA-387204-13");
     </script>
     <script>
+      function cloneStyles(source, /** @type {Window} */ dest, reset = false) {
+        const selector = 'style, link[rel="stylesheet"]';
+        if (reset) {
+          dest.document.querySelectorAll(selector).forEach((n) => n.remove());
+        }
+        const fragment = dest.document.createDocumentFragment();
+        source.document.querySelectorAll(selector).forEach((n) => {
+          const nClone = n.cloneNode(true);
+          if (nClone.nodeName.toLowerCase() === "link") {
+            // We need to wait for the css to load before we start adding content
+            // tried onload but it doesn't fire for some reason
+          }
+          fragment.appendChild(nClone);
+        });
+
+        const style = dest.document.createElement("style");
+        style.textContent =
+          "body { background: transparent; }\nhtml { background: transparent; }";
+        fragment.appendChild(style);
+        dest.document.head.appendChild(fragment);
+      }
+
       document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
-          const excal = excalidraw.default({
-            rootElement: document.getElementById("root"),
-            sendData(data) {},
-          });
+          const win = window.open("about:blank", "_blank");
+          console.log(win.document.body);
+
+          setTimeout(() => {
+            cloneStyles(window, win);
+            const excal = excalidraw.default({
+              rootElement: win.document.body,
+              sendData(data) {},
+            });
+          }, 1000);
         }, 1000);
       });
     </script>

@@ -29,10 +29,20 @@ export const getDateTime = () => {
 export const capitalizeString = (str: string) =>
   str.charAt(0).toUpperCase() + str.slice(1);
 
+export const isDomElement = (
+  target: HTMLElement | Element | EventTarget | null,
+): target is HTMLElement =>
+  target !== null &&
+  typeof target === "object" &&
+  // @ts-ignore
+  target.nodeType !== undefined;
+
 export const isToolIcon = (
   target: Element | EventTarget | null,
 ): target is HTMLElement =>
-  target instanceof HTMLElement && target.className.includes("ToolIcon");
+  target !== null &&
+  isDomElement(target) &&
+  target.className.includes("ToolIcon");
 
 export const isInputLike = (
   target: Element | EventTarget | null,
@@ -42,11 +52,16 @@ export const isInputLike = (
   | HTMLSelectElement
   | HTMLBRElement
   | HTMLDivElement =>
-  (target instanceof HTMLElement && target.dataset.type === "wysiwyg") ||
-  target instanceof HTMLBRElement || // newline in wysiwyg
-  target instanceof HTMLInputElement ||
-  target instanceof HTMLTextAreaElement ||
-  target instanceof HTMLSelectElement;
+  isDomElement(target) &&
+  (target.dataset.type === "wysiwyg" ||
+  target.tagName === "BR" || // newline in wysiwyg
+    target.tagName === "INPUT" ||
+    target.tagName === "TEXTAREA" ||
+    target.tagName === "SELECT");
+
+export const isInputElement = (target: Element): target is HTMLInputElement => {
+  return isDomElement(target) && target.tagName === "INPUT";
+};
 
 export const isWritableElement = (
   target: Element | EventTarget | null,
@@ -55,11 +70,12 @@ export const isWritableElement = (
   | HTMLTextAreaElement
   | HTMLBRElement
   | HTMLDivElement =>
-  (target instanceof HTMLElement && target.dataset.type === "wysiwyg") ||
-  target instanceof HTMLBRElement || // newline in wysiwyg
-  target instanceof HTMLTextAreaElement ||
-  (target instanceof HTMLInputElement &&
-    (target.type === "text" || target.type === "number"));
+  isDomElement(target) &&
+  (target.dataset.type === "wysiwyg" ||
+  target.tagName === "BR" || // newline in wysiwyg
+    target.tagName === "TEXTAREA" ||
+    (isInputElement(target) &&
+      (target.type === "text" || target.type === "number")));
 
 export const getFontFamilyString = ({
   fontFamily,

@@ -7,13 +7,14 @@ import { t } from "../i18n";
 import { register } from "./register";
 import { mutateElement } from "../element/mutateElement";
 import { isPathALoop } from "../math";
+import { isDomElement } from "../utils";
 
 export const actionFinalize = register({
   name: "finalize",
   perform: (elements, appState, fromData, window) => {
     let newElements = elements;
 
-    if (window.document.activeElement instanceof HTMLElement) {
+    if (isDomElement(window.document.activeElement)) {
       window.document.activeElement.blur();
     }
 

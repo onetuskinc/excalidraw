@@ -1,5 +1,10 @@
 import { KEYS } from "../keys";
-import { selectNode, isWritableElement, getFontString } from "../utils";
+import {
+  selectNode,
+  isWritableElement,
+  getFontString,
+  isDomElement,
+} from "../utils";
 import { globalSceneState } from "../scene";
 import { isTextElement } from "./typeChecks";
 import { CLASSES } from "../constants";
@@ -179,7 +184,7 @@ export const textWysiwyg = ({
   // prevent blur when changing properties from the menu
   const onPointerDown = (event: MouseEvent) => {
     if (
-      event.target instanceof HTMLElement &&
+      isDomElement(event.target) &&
       event.target.closest(`.${CLASSES.SHAPE_ACTIONS_MENU}`) &&
       !isWritableElement(event.target)
     ) {

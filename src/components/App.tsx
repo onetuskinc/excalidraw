@@ -449,31 +449,31 @@ class App extends React.Component<any, AppState> {
   private unmounted = false;
 
   public async componentDidMount() {
-    if (
-      process.env.NODE_ENV === "test" ||
-      process.env.NODE_ENV === "development"
-    ) {
-      const setState = this.setState.bind(this);
-      Object.defineProperties(this.props.window.h, {
-        state: {
-          configurable: true,
-          get: () => {
-            return this.state;
-          },
-        },
-        setState: {
-          configurable: true,
-          value: (...args: Parameters<typeof setState>) => {
-            return this.setState(...args);
-          },
-        },
-        app: {
-          configurable: true,
-          value: this,
-        },
-      });
-      this.onResize();
-    }
+    // if (
+    //   process.env.NODE_ENV === "test" ||
+    //   process.env.NODE_ENV === "development"
+    // ) {
+    //   const setState = this.setState.bind(this);
+    //   Object.defineProperties(this.props.window.h, {
+    //     state: {
+    //       configurable: true,
+    //       get: () => {
+    //         return this.state;
+    //       },
+    //     },
+    //     setState: {
+    //       configurable: true,
+    //       value: (...args: Parameters<typeof setState>) => {
+    //         return this.setState(...args);
+    //       },
+    //     },
+    //     app: {
+    //       configurable: true,
+    //       value: this,
+    //     },
+    //   });
+    // }
+    this.onResize();
 
     this.removeSceneCallback = globalSceneState.addCallback(
       this.onSceneUpdated,
@@ -739,7 +739,7 @@ class App extends React.Component<any, AppState> {
     if (!didTapTwice) {
       didTapTwice = true;
       clearTimeout(tappedTwiceTimer);
-      tappedTwiceTimer = window.setTimeout(
+      tappedTwiceTimer = this.props.window.setTimeout(
         this.resetTapTwice,
         TAP_TWICE_TIMEOUT,
       );
@@ -772,7 +772,7 @@ class App extends React.Component<any, AppState> {
         // if no ClipboardEvent supplied, assume we're pasting via contextMenu
         //  thus these checks don't make sense
         event &&
-        (!(elementUnderCursor instanceof HTMLCanvasElement) ||
+        (!(elementUnderCursor instanceof this.props.window.HTMLCanvasElement) ||
           isWritableElement(target))
       ) {
         return;
@@ -1731,7 +1731,10 @@ class App extends React.Component<any, AppState> {
     // Preventing the event above disables default behavior
     //  of defocusing potentially focused element, which is what we
     //  want when clicking inside the canvas.
-    if (this.props.window.document.activeElement instanceof HTMLElement) {
+    if (
+      this.props.window.document.activeElement instanceof
+      this.props.window.HTMLElement
+    ) {
       this.props.window.document.activeElement.blur();
     }
 
@@ -1764,7 +1767,7 @@ class App extends React.Component<any, AppState> {
       lastY = event.clientY;
       const onPointerMove = withBatchedUpdates((event: PointerEvent) => {
         const target = event.target;
-        if (!(target instanceof HTMLElement)) {
+        if (!(target instanceof this.props.window.HTMLElement)) {
           return;
         }
 
@@ -2106,7 +2109,7 @@ class App extends React.Component<any, AppState> {
 
     const onPointerMove = withBatchedUpdates((event: PointerEvent) => {
       const target = event.target;
-      if (!(target instanceof HTMLElement)) {
+      if (!(target instanceof this.props.window.HTMLElement)) {
         return;
       }
 
