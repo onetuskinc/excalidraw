@@ -29,6 +29,7 @@ type TextWysiwygParams = {
   onChange?: (text: string) => void;
   onSubmit: (text: string) => void;
   onCancel: () => void;
+  window: Window;
 };
 
 export const textWysiwyg = ({
@@ -45,8 +46,9 @@ export const textWysiwyg = ({
   textAlign,
   onSubmit,
   onCancel,
+  window,
 }: TextWysiwygParams) => {
-  const editable = document.createElement("div");
+  const editable = window.document.createElement("div");
   try {
     editable.contentEditable = "plaintext-only";
   } catch {
@@ -88,7 +90,7 @@ export const textWysiwyg = ({
 
       const text = event.clipboardData!.getData("text").replace(/\r\n?/g, "\n");
 
-      const span = document.createElement("span");
+      const span = window.document.createElement("span");
       span.innerText = text;
       const range = selection.getRangeAt(0);
       range.insertNode(span);
@@ -157,7 +159,7 @@ export const textWysiwyg = ({
 
     unbindUpdate();
 
-    document.body.removeChild(editable);
+    window.document.body.removeChild(editable);
   };
 
   const rebindBlur = () => {
@@ -207,7 +209,7 @@ export const textWysiwyg = ({
   editable.onblur = handleSubmit;
   window.addEventListener("pointerdown", onPointerDown);
   window.addEventListener("wheel", stopEvent, true);
-  document.body.appendChild(editable);
+  window.document.body.appendChild(editable);
   editable.focus();
-  selectNode(editable);
+  selectNode(editable, window);
 };
