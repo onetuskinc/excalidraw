@@ -41,7 +41,7 @@ import {
   isSomeElementSelected,
   calculateScrollCenter,
 } from "../scene";
-import { loadFromBlob, SocketUpdateDataSource, exportCanvas } from "../data";
+import { SocketUpdateDataSource, exportCanvas } from "../data";
 
 import { renderScene } from "../renderer";
 import { AppState, GestureEvent, Gesture } from "../types";
@@ -180,13 +180,14 @@ class App extends React.Component<any, AppState> {
       ) => {
         const { elements: remoteElements } = decryptedData.payload;
 
-        if (scrollToContent) {
+        if (scrollToContent && this.canvas) {
           this.setState({
             ...this.state,
             ...calculateScrollCenter(
               remoteElements.filter((element: { isDeleted: boolean }) => {
                 return !element.isDeleted;
               }),
+              this.canvas,
             ),
           });
         }
@@ -309,7 +310,10 @@ class App extends React.Component<any, AppState> {
       this.syncActionResult,
       () => this.state,
       () => globalSceneState.getElementsIncludingDeleted(),
+      this.props.window,
+      () => this.canvas,
     );
+
     this.actionManager.registerAll(actions);
 
     this.actionManager.registerAction(createUndoAction(history));
@@ -358,7 +362,6 @@ class App extends React.Component<any, AppState> {
             onPointerMove={this.handleCanvasPointerMove}
             onPointerUp={this.removePointer}
             onPointerCancel={this.removePointer}
-            onDrop={this.handleCanvasOnDrop}
           >
             {t("labels.drawingCanvas")}
           </canvas>
@@ -2527,35 +2530,6 @@ class App extends React.Component<any, AppState> {
     } else {
       this.canvas?.removeEventListener(EVENT.WHEEL, this.handleWheel);
       this.canvas?.removeEventListener(EVENT.TOUCH_START, this.onTapStart);
-    }
-  };
-
-  private handleCanvasOnDrop = (event: React.DragEvent<HTMLCanvasElement>) => {
-    const file = event.dataTransfer?.files[0];
-    if (
-      file?.type === "application/json" ||
-      file?.name.endsWith(".excalidraw")
-    ) {
-      this.setState({ isLoading: true });
-      loadFromBlob(file)
-        .then(({ elements, appState }) =>
-          this.syncActionResult({
-            elements,
-            appState: {
-              ...(appState || this.state),
-              isLoading: false,
-            },
-            commitToHistory: false,
-          }),
-        )
-        .catch((error) => {
-          this.setState({ isLoading: false, errorMessage: error.message });
-        });
-    } else {
-      this.setState({
-        isLoading: false,
-        errorMessage: t("alerts.couldNotLoadInvalidFile"),
-      });
     }
   };
 

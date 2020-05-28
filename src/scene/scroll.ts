@@ -7,6 +7,7 @@ export const normalizeScroll = (pos: number) =>
 
 export const calculateScrollCenter = (
   elements: readonly ExcalidrawElement[],
+  canvas: HTMLCanvasElement,
 ): { scrollX: FlooredNumber; scrollY: FlooredNumber } => {
   if (!elements.length) {
     return {
@@ -20,8 +21,10 @@ export const calculateScrollCenter = (
   const centerX = (x1 + x2) / 2;
   const centerY = (y1 + y2) / 2;
 
+  const canvasBounds = canvas.getBoundingClientRect();
+
   return {
-    scrollX: normalizeScroll(window.innerWidth / 2 - centerX),
-    scrollY: normalizeScroll(window.innerHeight / 2 - centerY),
+    scrollX: normalizeScroll(canvasBounds.width / 2 - centerX),
+    scrollY: normalizeScroll(canvasBounds.height / 2 - centerY),
   };
 };

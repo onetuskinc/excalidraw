@@ -23,6 +23,7 @@ type MobileMenuProps = {
   elements: readonly NonDeletedExcalidrawElement[];
   onUsernameChange: (username: string) => void;
   onLockToggle: () => void;
+  canvas: HTMLCanvasElement | null;
 };
 
 export const MobileMenu = ({
@@ -33,6 +34,7 @@ export const MobileMenu = ({
   setAppState,
   onUsernameChange,
   onLockToggle,
+  canvas,
 }: MobileMenuProps) => (
   <>
     {appState.isLoading && <LoadingMessage />}
@@ -105,7 +107,10 @@ export const MobileMenu = ({
             <button
               className="scroll-back-to-content"
               onClick={() => {
-                setAppState({ ...calculateScrollCenter(elements) });
+                if (canvas === null) {
+                  return;
+                }
+                setAppState({ ...calculateScrollCenter(elements, canvas) });
               }}
             >
               {t("buttons.scrollBackToContent")}

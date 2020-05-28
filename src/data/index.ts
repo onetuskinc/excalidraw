@@ -17,17 +17,10 @@ import {
 import { serializeAsJSON } from "./json";
 
 import { ExportType } from "../scene/types";
-import { restore } from "./restore";
-import { restoreFromLocalStorage } from "./localStorage";
 
-export { loadFromBlob } from "./blob";
-export { saveAsJSON, loadFromJSON } from "./json";
-export { saveToLocalStorage } from "./localStorage";
-
-const BACKEND_GET = "https://json.excalidraw.com/api/v1/";
+export { saveAsJSON } from "./json";
 
 const BACKEND_V2_POST = "https://json.excalidraw.com/api/v2/post/";
-const BACKEND_V2_GET = "https://json.excalidraw.com/api/v2/";
 
 export const SOCKET_SERVER = "https://excalidraw-socket.herokuapp.com";
 
@@ -232,54 +225,6 @@ export const exportToBackend = async (
   }
 };
 
-export const importFromBackend = async (
-  id: string | null,
-  privateKey: string | undefined,
-) => {
-  let elements: readonly ExcalidrawElement[] = [];
-  let appState: AppState = getDefaultAppState();
-
-  try {
-    const response = await fetch(
-      privateKey ? `${BACKEND_V2_GET}${id}` : `${BACKEND_GET}${id}.json`,
-    );
-    if (!response.ok) {
-      window.alert(t("alerts.importBackendFailed"));
-      return restore(elements, appState, { scrollToContent: true });
-    }
-    let data;
-    if (privateKey) {
-      const buffer = await response.arrayBuffer();
-      const key = await getImportedKey(privateKey, "decrypt");
-      const iv = new Uint8Array(12);
-      const decrypted = await window.crypto.subtle.decrypt(
-        {
-          name: "AES-GCM",
-          iv: iv,
-        },
-        key,
-        buffer,
-      );
-      // We need to convert the decrypted array buffer to a string
-      const string = new window.TextDecoder("utf-8").decode(
-        new Uint8Array(decrypted) as any,
-      );
-      data = JSON.parse(string);
-    } else {
-      // Legacy format
-      data = await response.json();
-    }
-
-    elements = data.elements || elements;
-    appState = data.appState || appState;
-  } catch (error) {
-    window.alert(t("alerts.importBackendFailed"));
-    console.error(error);
-  } finally {
-    return restore(elements, appState, { scrollToContent: true });
-  }
-};
-
 export const exportCanvas = async (
   type: ExportType,
   elements: readonly NonDeletedExcalidrawElement[],
@@ -359,22 +304,4 @@ export const exportCanvas = async (
   if (tempCanvas !== canvas) {
     tempCanvas.remove();
   }
-};
-
-export const loadScene = async (id: string | null, privateKey?: string) => {
-  let data;
-  if (id != null) {
-    // the private key is used to decrypt the content from the server, take
-    // extra care not to leak it
-    data = await importFromBackend(id, privateKey);
-    window.history.replaceState({}, "Excalidraw", window.location.origin);
-  } else {
-    data = restoreFromLocalStorage();
-  }
-
-  return {
-    elements: data.elements,
-    appState: data.appState && { ...data.appState },
-    commitToHistory: false,
-  };
 };

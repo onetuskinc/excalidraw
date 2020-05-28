@@ -200,9 +200,9 @@ const calculateZoom = (
 
 export const actionZoomToFit = register({
   name: "zoomToFit",
-  perform: (elements, appState) => {
+  perform: (elements, appState, formData, window, canvas) => {
     const nonDeletedElements = elements.filter((element) => !element.isDeleted);
-    const scrollCenter = calculateScrollCenter(nonDeletedElements);
+    const scrollCenter = calculateScrollCenter(nonDeletedElements, canvas);
     const commonBounds = getCommonBounds(nonDeletedElements);
     const zoom = calculateZoom(commonBounds, appState.zoom, scrollCenter);
 

@@ -14,6 +14,7 @@ type ActionFn = (
   appState: AppState,
   formData: any,
   window: Window,
+  canvas: HTMLCanvasElement,
 ) => ActionResult;
 
 export type UpdaterFn = (res: ActionResult, commitToHistory?: boolean) => void;
