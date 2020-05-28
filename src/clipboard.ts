@@ -86,13 +86,19 @@ export const getClipboardContent = async (
   return getAppClipboard();
 };
 
-export const copyCanvasToClipboardAsPng = async (canvas: HTMLCanvasElement) =>
-  new Promise((resolve, reject) => {
+export const copyCanvasToClipboardAsPng = async (canvas: HTMLCanvasElement) => {
+  const win = canvas.ownerDocument?.defaultView;
+
+  if (!win) {
+    return;
+  }
+
+  return new Promise((resolve, reject) => {
     try {
       canvas.toBlob(async (blob: any) => {
         try {
-          await navigator.clipboard.write([
-            new window.ClipboardItem({ "image/png": blob }),
+          await win.navigator.clipboard.write([
+            new win.ClipboardItem({ "image/png": blob }),
           ]);
           resolve();
         } catch (error) {
@@ -103,6 +109,7 @@ export const copyCanvasToClipboardAsPng = async (canvas: HTMLCanvasElement) =>
       reject(error);
     }
   });
+};
 
 export const copyCanvasToClipboardAsSvg = async (svgroot: SVGSVGElement) => {
   try {
