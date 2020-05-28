@@ -1202,6 +1202,7 @@ class App extends React.Component<any, AppState> {
         }
         resetSelection();
       }),
+      window: this.props.window,
     });
     // deselect all other elements when inserting text
     this.setState({
