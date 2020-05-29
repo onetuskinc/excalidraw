@@ -37,6 +37,7 @@ type TextWysiwygParams = {
   onSubmit: (text: string) => void;
   onCancel: () => void;
   window: Window;
+  container: HTMLElement;
 };
 
 export const textWysiwyg = ({
@@ -55,6 +56,7 @@ export const textWysiwyg = ({
   onSubmit,
   onCancel,
   window,
+  container,
 }: TextWysiwygParams) => {
   const editable = window.document.createElement("div");
   try {
@@ -71,7 +73,7 @@ export const textWysiwyg = ({
 
   Object.assign(editable.style, {
     color: strokeColor,
-    position: "fixed",
+    position: "absolute",
     opacity: opacity / 100,
     top: `${y}px`,
     left: `${x}px`,
@@ -167,7 +169,7 @@ export const textWysiwyg = ({
 
     unbindUpdate();
 
-    window.document.body.removeChild(editable);
+    container.removeChild(editable);
   };
 
   const rebindBlur = () => {
@@ -217,7 +219,7 @@ export const textWysiwyg = ({
   editable.onblur = handleSubmit;
   window.addEventListener("pointerdown", onPointerDown);
   window.addEventListener("wheel", stopEvent, true);
-  window.document.body.appendChild(editable);
+  container.appendChild(editable);
   editable.focus();
   selectNode(editable, window);
 };

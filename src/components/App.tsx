@@ -162,6 +162,7 @@ class App extends React.Component<any, AppState> {
   sendData: Function;
   actionManager: ActionManager;
   canvasOnlyActions = ["selectAll"];
+  container: HTMLElement | null = null;
 
   public state: AppState = {
     canvasWidth: 800,
@@ -328,6 +329,7 @@ class App extends React.Component<any, AppState> {
 
     return (
       <div
+        ref={this.handleContainerRef}
         className="excalidraw-container"
         style={{ cursor: this.state.cursor.toString() }}
       >
@@ -1142,6 +1144,10 @@ class App extends React.Component<any, AppState> {
       isExistingElement = false,
     }: { x: number; y: number; isExistingElement?: boolean },
   ) {
+    const container = this.container;
+    if (container === null) {
+      return;
+    }
     const resetSelection = () => {
       this.setState({
         draggingElement: null,
@@ -1177,6 +1183,7 @@ class App extends React.Component<any, AppState> {
     };
 
     textWysiwyg({
+      container,
       id: element.id,
       x,
       y,
@@ -1282,18 +1289,18 @@ class App extends React.Component<any, AppState> {
       const centerElementX = elementAtPosition.x + elementAtPosition.width / 2;
       const centerElementY = elementAtPosition.y + elementAtPosition.height / 2;
 
-      const {
-        x: centerElementXInViewport,
-        y: centerElementYInViewport,
-      } = sceneCoordsToViewportCoords(
-        { sceneX: centerElementX, sceneY: centerElementY },
-        this.state,
-        this.canvas,
-        this.props.window.devicePixelRatio,
-      );
+      // const {
+      //   x: centerElementXInViewport,
+      //   y: centerElementYInViewport,
+      // } = sceneCoordsToViewportCoords(
+      //   { sceneX: centerElementX, sceneY: centerElementY },
+      //   this.state,
+      //   this.canvas,
+      //   this.props.window.devicePixelRatio,
+      // );
 
-      textX = centerElementXInViewport;
-      textY = centerElementYInViewport;
+      textX = centerElementX;
+      textY = centerElementY;
 
       // x and y will change after calling newTextElement function
       mutateElement(element, {
@@ -1392,8 +1399,8 @@ class App extends React.Component<any, AppState> {
     this.startTextEditing({
       x: x,
       y: y,
-      clientX: event.clientX,
-      clientY: event.clientY,
+      // clientX: event.clientX,
+      // clientY: event.clientY,
       centerIfPossible: !event.altKey,
     });
   };
@@ -1978,8 +1985,8 @@ class App extends React.Component<any, AppState> {
       this.startTextEditing({
         x: x,
         y: y,
-        clientX: event.clientX,
-        clientY: event.clientY,
+        // clientX: event.clientX,
+        // clientY: event.clientY,
         centerIfPossible: !event.altKey,
       });
 
@@ -2527,6 +2534,10 @@ class App extends React.Component<any, AppState> {
 
     this.props.window.addEventListener(EVENT.POINTER_MOVE, onPointerMove);
     this.props.window.addEventListener(EVENT.POINTER_UP, onPointerUp);
+  };
+
+  private handleContainerRef = (container: HTMLElement | null) => {
+    this.container = container;
   };
 
   private handleCanvasRef = (canvas: HTMLCanvasElement) => {

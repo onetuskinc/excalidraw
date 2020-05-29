@@ -143,18 +143,30 @@
         dest.document.head.appendChild(fragment);
       }
 
+      // document.addEventListener("DOMContentLoaded", () => {
+      //   setTimeout(() => {
+      //     const win = window.open("about:blank", "_blank");
+
+      //     setTimeout(() => {
+      //       cloneStyles(window, win);
+      //       const excal = excalidraw.default({
+      //         rootElement: win.document.body,
+      //         sendData(data) {
+      //           console.log(data);
+      //         },
+      //       });
+      //     }, 1000);
+      //   }, 1000);
+      // });
+
       document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
-          const win = window.open("about:blank", "_blank");
-          console.log(win.document.body);
-
-          setTimeout(() => {
-            cloneStyles(window, win);
-            const excal = excalidraw.default({
-              rootElement: win.document.body,
-              sendData(data) {},
-            });
-          }, 1000);
+          const excal = excalidraw.default({
+            rootElement: document.getElementById("root"),
+            sendData(data) {
+              console.log(data);
+            },
+          });
         }, 1000);
       });
     </script>
