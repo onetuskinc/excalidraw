@@ -43,12 +43,13 @@ const ContextMenuOption = ({ label, action }: ContextMenuOption) => (
 );
 
 let contextMenuNode: HTMLDivElement;
-const getContextMenuNode = (): HTMLDivElement => {
-  if (contextMenuNode) {
+const getContextMenuNode = (window?: Window): HTMLDivElement => {
+  if (contextMenuNode || !window) {
     return contextMenuNode;
   }
+
   const div = document.createElement("div");
-  document.body.appendChild(div);
+  window.document.body.appendChild(div);
   return (contextMenuNode = div);
 };
 
@@ -56,6 +57,7 @@ type ContextMenuParams = {
   options: (ContextMenuOption | false | null | undefined)[];
   top: number;
   left: number;
+  window: Window;
 };
 
 const handleClose = () => {
@@ -78,7 +80,7 @@ export default {
           options={options}
           onCloseRequest={handleClose}
         />,
-        getContextMenuNode(),
+        getContextMenuNode(params.window),
       );
     }
   },

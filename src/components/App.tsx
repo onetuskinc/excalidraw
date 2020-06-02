@@ -2621,6 +2621,7 @@ class App extends React.Component<any, AppState> {
             this.canvasOnlyActions.includes(action.name),
           ),
         ],
+        window: this.props.window,
         top: event.clientY,
         left: event.clientX,
       });
@@ -2653,6 +2654,7 @@ class App extends React.Component<any, AppState> {
           (action) => !this.canvasOnlyActions.includes(action.name),
         ),
       ],
+      window: this.props.window,
       top: event.clientY,
       left: event.clientX,
     });
