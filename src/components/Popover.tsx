@@ -46,10 +46,11 @@ export const Popover = ({
           unstable_batchedUpdates(() => onCloseRequest(event));
         }
       };
-      document.addEventListener("pointerdown", handler, false);
-      return () => document.removeEventListener("pointerdown", handler, false);
+      window.document.addEventListener("pointerdown", handler, false);
+      return () =>
+        window.document.removeEventListener("pointerdown", handler, false);
     }
-  }, [onCloseRequest]);
+  }, [onCloseRequest, window.document]);
 
   return (
     <div className="popover" style={{ top: top, left: left }} ref={popoverRef}>
