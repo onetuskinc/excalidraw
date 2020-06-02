@@ -24,12 +24,13 @@ export const hasStroke = (type: string) =>
 export const hasText = (type: string) => type === "text";
 
 export const getElementAtPosition = (
-  elements: readonly NonDeletedExcalidrawElement[],
+  readOnlyElements: readonly NonDeletedExcalidrawElement[],
   appState: AppState,
   x: number,
   y: number,
   zoom: number,
 ) => {
+  const elements = readOnlyElements.slice().sort((a, b) => a.zIndex - b.zIndex);
   let hitElement = null;
   // We need to to hit testing from front (end of the array) to back (beginning of the array)
   for (let i = elements.length - 1; i >= 0; --i) {
