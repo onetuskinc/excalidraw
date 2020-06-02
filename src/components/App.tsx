@@ -273,6 +273,16 @@ class App extends React.Component<any, AppState> {
         // right now we think this is the right tradeoff.
         history.clear();
       };
+
+      props.receiveData.on("center", () => {
+        if (this.canvas === null) {
+          return;
+        }
+        this.setState({
+          ...this.state,
+          ...calculateScrollCenter(globalSceneState.getElements(), this.canvas),
+        });
+      });
       props.receiveData.on("data", (data: any) => {
         updateScene(data);
       });
