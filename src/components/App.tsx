@@ -1157,7 +1157,11 @@ class App extends React.Component<any, AppState> {
       x,
       y,
       isExistingElement = false,
-    }: { x: number; y: number; isExistingElement?: boolean },
+    }: {
+      x: number;
+      y: number;
+      isExistingElement?: boolean;
+    },
   ) {
     const container = this.container;
     if (container === null) {
@@ -1255,17 +1259,21 @@ class App extends React.Component<any, AppState> {
   private startTextEditing = ({
     x: sceneX,
     y: sceneY,
+    clientX,
+    clientY,
     centerIfPossible = true,
   }: {
     x: number;
     y: number;
+    clientX?: number;
+    clientY?: number;
     centerIfPossible?: boolean;
   }) => {
     const elementAtPosition = getElementAtPosition(
       globalSceneState.getElements(),
       this.state,
-      x,
-      y,
+      sceneX,
+      sceneY,
       this.state.zoom,
     );
 
@@ -1273,8 +1281,8 @@ class App extends React.Component<any, AppState> {
       elementAtPosition && isTextElement(elementAtPosition)
         ? elementAtPosition
         : newTextElement({
-            x: x,
-            y: y,
+            x: sceneX,
+            y: sceneY,
             strokeColor: this.state.currentItemStrokeColor,
             backgroundColor: this.state.currentItemBackgroundColor,
             fillStyle: this.state.currentItemFillStyle,
@@ -1297,8 +1305,8 @@ class App extends React.Component<any, AppState> {
 
     this.setState({ editingElement: element });
 
-    let textX = clientX || x;
-    let textY = clientY || y;
+    let textX = clientX || sceneX;
+    let textY = clientY || sceneY;
 
     let isExistingTextElement = false;
 
@@ -1307,24 +1315,23 @@ class App extends React.Component<any, AppState> {
       const centerElementX = elementAtPosition.x + elementAtPosition.width / 2;
       const centerElementY = elementAtPosition.y + elementAtPosition.height / 2;
 
-      // const {
-      //   x: centerElementXInViewport,
-      //   y: centerElementYInViewport,
-      // } = sceneCoordsToViewportCoords(
-      //   { sceneX: centerElementX, sceneY: centerElementY },
-      //   this.state,
-      //   this.canvas,
-      //   this.props.window.devicePixelRatio,
-      // );
+      const {
+        x: centerElementXInViewport,
+        y: centerElementYInViewport,
+      } = sceneCoordsToViewportCoords(
+        { sceneX: centerElementX, sceneY: centerElementY },
+        this.state,
+        this.canvas,
+        this.props.window.devicePixelRatio,
+      );
 
-      textX = centerElementX;
-      textY = centerElementY;
-
-      // x and y will change after calling newTextElement function
       mutateElement(element, {
         x: centerElementX,
         y: centerElementY,
       });
+
+      textX = centerElementXInViewport;
+      textY = centerElementYInViewport;
     } else {
       globalSceneState.replaceAllElements([
         ...globalSceneState.getElementsIncludingDeleted(),
@@ -1333,13 +1340,12 @@ class App extends React.Component<any, AppState> {
 
       if (centerIfPossible) {
         const snappedToCenterPosition = this.getTextWysiwygSnappedToCenterPosition(
-          x,
-          y,
+          sceneX,
+          sceneY,
           this.state,
           this.canvas,
           this.props.window.devicePixelRatio,
         );
-
         if (snappedToCenterPosition) {
           mutateElement(element, {
             x: snappedToCenterPosition.elementCenterX,
@@ -1417,8 +1423,8 @@ class App extends React.Component<any, AppState> {
     this.startTextEditing({
       x: x,
       y: y,
-      // clientX: event.clientX,
-      // clientY: event.clientY,
+      clientX: event.clientX,
+      clientY: event.clientY,
       centerIfPossible: !event.altKey,
     });
   };
@@ -2003,8 +2009,8 @@ class App extends React.Component<any, AppState> {
       this.startTextEditing({
         x: x,
         y: y,
-        // clientX: event.clientX,
-        // clientY: event.clientY,
+        clientX: event.clientX,
+        clientY: event.clientY,
         centerIfPossible: !event.altKey,
       });
 

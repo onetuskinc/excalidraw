@@ -73,7 +73,7 @@ export const textWysiwyg = ({
 
   Object.assign(editable.style, {
     color: strokeColor,
-    position: "absolute",
+    position: "fixed",
     opacity: opacity / 100,
     top: `${y}px`,
     left: `${x}px`,
