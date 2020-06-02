@@ -142,14 +142,16 @@ export const renderScene = (
   context.scale(sceneState.zoom, sceneState.zoom);
 
   // Paint visible elements
-  const visibleElements = elements.filter((element) =>
-    isVisibleElement(
-      element,
-      normalizedCanvasWidth,
-      normalizedCanvasHeight,
-      sceneState,
-    ),
-  );
+  const visibleElements = elements
+    .filter((element) =>
+      isVisibleElement(
+        element,
+        normalizedCanvasWidth,
+        normalizedCanvasHeight,
+        sceneState,
+      ),
+    )
+    .sort((a, b) => a.zIndex - b.zIndex);
 
   visibleElements.forEach((element) => {
     renderElement(element, rc, context, renderOptimizations, sceneState);

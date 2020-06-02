@@ -22,6 +22,7 @@ type _ExcalidrawElementBase = Readonly<{
   versionNonce: number;
   isDeleted: boolean;
   groupIds: GroupId[];
+  zIndex: number;
 }>;
 
 export type ExcalidrawSelectionElement = _ExcalidrawElementBase & {

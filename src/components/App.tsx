@@ -851,6 +851,11 @@ class App extends React.Component<any, AppState> {
       fontSize: this.state.currentItemFontSize,
       fontFamily: this.state.currentItemFontFamily,
       textAlign: this.state.currentItemTextAlign,
+      zIndex:
+        Math.max(
+          -1,
+          ...globalSceneState.getElements().map((element) => element.zIndex),
+        ) + 1,
     });
 
     globalSceneState.replaceAllElements([
@@ -1275,6 +1280,13 @@ class App extends React.Component<any, AppState> {
             fontSize: this.state.currentItemFontSize,
             fontFamily: this.state.currentItemFontFamily,
             textAlign: this.state.currentItemTextAlign,
+            zIndex:
+              Math.max(
+                -1,
+                ...globalSceneState
+                  .getElements()
+                  .map((element) => element.zIndex),
+              ) + 1,
           });
 
     this.setState({ editingElement: element });
@@ -2061,6 +2073,13 @@ class App extends React.Component<any, AppState> {
           strokeStyle: this.state.currentItemStrokeStyle,
           roughness: this.state.currentItemRoughness,
           opacity: this.state.currentItemOpacity,
+          zIndex:
+            Math.max(
+              -1,
+              ...globalSceneState
+                .getElements()
+                .map((element) => element.zIndex),
+            ) + 1,
         });
         this.setState((prevState) => ({
           selectedElementIds: {
@@ -2092,6 +2111,11 @@ class App extends React.Component<any, AppState> {
         strokeStyle: this.state.currentItemStrokeStyle,
         roughness: this.state.currentItemRoughness,
         opacity: this.state.currentItemOpacity,
+        zIndex:
+          Math.max(
+            -1,
+            ...globalSceneState.getElements().map((element) => element.zIndex),
+          ) + 1,
       });
 
       if (element.type === "selection") {

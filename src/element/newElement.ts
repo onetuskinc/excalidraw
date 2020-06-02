@@ -26,6 +26,7 @@ type ElementConstructorOpts = {
   width?: ExcalidrawGenericElement["width"];
   height?: ExcalidrawGenericElement["height"];
   angle?: ExcalidrawGenericElement["angle"];
+  zIndex: number;
 };
 
 const _newElementBase = <T extends ExcalidrawElement>(
@@ -43,6 +44,7 @@ const _newElementBase = <T extends ExcalidrawElement>(
     width = 0,
     height = 0,
     angle = 0,
+    zIndex = 0,
     ...rest
   }: ElementConstructorOpts & Omit<Partial<ExcalidrawGenericElement>, "type">,
 ) => ({
@@ -65,6 +67,7 @@ const _newElementBase = <T extends ExcalidrawElement>(
   versionNonce: rest.versionNonce ?? 0,
   isDeleted: false as false,
   groupIds: [],
+  zIndex,
 });
 
 export const newElement = (
@@ -96,6 +99,7 @@ export const newTextElement = (
       width: metrics.width,
       height: metrics.height,
       baseline: metrics.baseline,
+      zIndex: opts.zIndex,
     },
     {},
   );

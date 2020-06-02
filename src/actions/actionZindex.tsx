@@ -67,10 +67,24 @@ const moveElements = (
   appState: AppState,
 ) => {
   const _elements = elements.slice();
+  const previousZIndex = _elements.reduce((accumulator, element) => {
+    accumulator[element.id] = element.zIndex;
+    return accumulator;
+  }, {} as { [key: string]: number });
   const direction =
     func === moveOneLeft || func === moveAllLeft ? "left" : "right";
   const indices = getElementIndices(direction, _elements, appState);
-  return func(_elements, indices);
+  const ret = func(_elements, indices).map((element, i) => {
+    return {
+      ...element,
+      zIndex: i,
+      version:
+        previousZIndex[element.id] === i
+          ? element.version
+          : element.version + 1,
+    };
+  });
+  return ret;
 };
 
 export const actionSendBackward = register({
