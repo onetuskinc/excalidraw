@@ -274,6 +274,7 @@ export const ColorPicker = ({
       <React.Suspense fallback="">
         {isActive ? (
           <Popover
+            window={window}
             onCloseRequest={(event) =>
               event.target !== pickerButton.current && setActive(false)
             }
