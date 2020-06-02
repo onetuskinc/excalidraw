@@ -1253,16 +1253,12 @@ class App extends React.Component<any, AppState> {
   }
 
   private startTextEditing = ({
-    x,
-    y,
-    clientX,
-    clientY,
+    x: sceneX,
+    y: sceneY,
     centerIfPossible = true,
   }: {
     x: number;
     y: number;
-    clientX?: number;
-    clientY?: number;
     centerIfPossible?: boolean;
   }) => {
     const elementAtPosition = getElementAtPosition(
