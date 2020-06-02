@@ -14,14 +14,16 @@ type Props = {
   onCloseRequest?(): void;
   top: number;
   left: number;
+  window: Window;
 };
 
-const ContextMenu = ({ options, onCloseRequest, top, left }: Props) => (
+const ContextMenu = ({ options, onCloseRequest, top, left, window }: Props) => (
   <Popover
     onCloseRequest={onCloseRequest}
     top={top}
     left={left}
     fitInViewport={true}
+    window={window}
   >
     <ul
       className="context-menu"
@@ -79,6 +81,7 @@ export default {
           left={params.left}
           options={options}
           onCloseRequest={handleClose}
+          window={params.window}
         />,
         getContextMenuNode(params.window),
       );
