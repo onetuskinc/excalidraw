@@ -2,14 +2,13 @@ import React, { useLayoutEffect, useRef, useEffect } from "react";
 import "./Popover.css";
 import { unstable_batchedUpdates } from "react-dom";
 
-import useGetWindow from "../window";
-
 type Props = {
   top?: number;
   left?: number;
   children?: React.ReactNode;
   onCloseRequest?(event: PointerEvent): void;
   fitInViewport?: boolean;
+  window: Window;
 };
 
 export const Popover = ({
@@ -18,8 +17,8 @@ export const Popover = ({
   top,
   onCloseRequest,
   fitInViewport = false,
+  window,
 }: Props) => {
-  const window = useGetWindow();
   const popoverRef = useRef<HTMLDivElement>(null);
 
   // ensure the popover doesn't overflow the viewport
