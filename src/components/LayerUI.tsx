@@ -95,21 +95,37 @@ const LayerUI = ({
   };
 
   const renderCanvasActions = () => (
-    <Section
-      heading="canvasActions"
-      className={`zen-mode-transition ${zenModeEnabled && "transition-left"}`}
-    >
-      {/* the zIndex ensures this menu has higher stacking order,
+    <div>
+      {appState.scrolledOutside && (
+        <button
+          className="scroll-back-to-content"
+          onClick={() => {
+            if (canvas === null) {
+              return;
+            }
+            setAppState({ ...calculateScrollCenter(elements, canvas) });
+          }}
+        >
+          {t("buttons.scrollBackToContent")}
+        </button>
+      )}
+
+      <Section
+        heading="canvasActions"
+        className={`zen-mode-transition ${zenModeEnabled && "transition-left"}`}
+      >
+        {/* the zIndex ensures this menu has higher stacking order,
          see https://github.com/excalidraw/excalidraw/pull/1445 */}
-      <Island padding={4} style={{ zIndex: 1 }}>
-        <Stack.Col gap={4}>
-          <Stack.Row gap={1} justifyContent="space-between">
-            {actionManager.renderAction("clearCanvas")}
-            {actionManager.renderAction("changeViewBackgroundColor")}
-          </Stack.Row>
-        </Stack.Col>
-      </Island>
-    </Section>
+        <Island padding={4} style={{ zIndex: 1 }}>
+          <Stack.Col gap={4}>
+            <Stack.Row gap={1} justifyContent="space-between">
+              {actionManager.renderAction("clearCanvas")}
+              {actionManager.renderAction("changeViewBackgroundColor")}
+            </Stack.Row>
+          </Stack.Col>
+        </Island>
+      </Section>
+    </div>
   );
 
   const renderSelectedShapeActions = () => (
@@ -201,19 +217,6 @@ const LayerUI = ({
       >
         {t("buttons.exitZenMode")}
       </button>
-      {appState.scrolledOutside && (
-        <button
-          className="scroll-back-to-content"
-          onClick={() => {
-            if (canvas === null) {
-              return;
-            }
-            setAppState({ ...calculateScrollCenter(elements, canvas) });
-          }}
-        >
-          {t("buttons.scrollBackToContent")}
-        </button>
-      )}
     </footer>
   );
 

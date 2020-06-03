@@ -5,7 +5,7 @@ const resolve = require("resolve");
 const PnpWebpackPlugin = require("pnp-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin");
-const InlineChunkHtmlPlugin = require("react-dev-utils/InlineChunkHtmlPlugin");
+// const InlineChunkHtmlPlugin = require("react-dev-utils/InlineChunkHtmlPlugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
@@ -31,9 +31,9 @@ const appPackageJson = require(paths.appPackageJson);
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== "false";
 // Some apps do not need the benefits of saving a web request, so not inlining the chunk
 // makes for a smoother build process.
-const shouldInlineRuntimeChunk = process.env.INLINE_RUNTIME_CHUNK !== "false";
+// const shouldInlineRuntimeChunk = process.env.INLINE_RUNTIME_CHUNK !== "false";
 
-const isExtendingEslintConfig = process.env.EXTEND_ESLINT === "true";
+// const isExtendingEslintConfig = process.env.EXTEND_ESLINT === "true";
 
 const imageInlineSizeLimit = parseInt(
   process.env.IMAGE_INLINE_SIZE_LIMIT || "10000",
@@ -193,7 +193,7 @@ module.exports = function (webpackEnv) {
       jsonpFunction: `webpackJsonp${appPackageJson.name}`,
       // this defaults to 'window', but by setting it to 'this' then
       // module chunks which are built will work in web workers as well.
-      globalObject: "this",
+      // globalObject: "this",
     },
     optimization: {
       minimize: isEnvProduction,

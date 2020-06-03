@@ -6,7 +6,7 @@ import { showSelectedShapeActions, getNonDeletedElements } from "../element";
 import { register } from "./register";
 import { allowFullScreen, exitFullScreen, isFullScreen } from "../utils";
 import { KEYS } from "../keys";
-import { HelpIcon } from "../components/HelpIcon";
+// import { HelpIcon } from "../components/HelpIcon";
 
 export const actionToggleCanvasMenu = register({
   name: "toggleCanvasMenu",
@@ -68,19 +68,19 @@ export const actionFullScreen = register({
   keyTest: (event) => event.keyCode === KEYS.F_KEY_CODE,
 });
 
-export const actionShortcuts = register({
-  name: "toggleShortcuts",
-  perform: (_elements, appState) => {
-    return {
-      appState: {
-        ...appState,
-        showShortcutsDialog: true,
-      },
-      commitToHistory: false,
-    };
-  },
-  PanelComponent: ({ updateData }) => (
-    <HelpIcon title={t("shortcutsDialog.title")} onClick={updateData} />
-  ),
-  keyTest: (event) => event.key === KEYS.QUESTION_MARK,
-});
+// export const actionShortcuts = register({
+//   name: "toggleShortcuts",
+//   perform: (_elements, appState) => {
+//     return {
+//       appState: {
+//         ...appState,
+//         showShortcutsDialog: true,
+//       },
+//       commitToHistory: false,
+//     };
+//   },
+//   PanelComponent: ({ updateData }) => (
+//     <HelpIcon title={t("shortcutsDialog.title")} onClick={updateData} />
+//   ),
+//   keyTest: (event) => event.key === KEYS.QUESTION_MARK,
+// });
