@@ -5,6 +5,7 @@ import { Dialog } from "./Dialog";
 import { getShortcutKey } from "../utils";
 import "./HelpDialog.scss";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const Header = () => (
   <div className="HelpDialog--header">
     <a
@@ -135,7 +136,7 @@ export const HelpDialog = ({ onClose }: { onClose?: () => void }) => {
         title={t("helpDialog.title")}
         className={"HelpDialog"}
       >
-        <Header />
+        {/* <Header /> */}
         <Section title={t("helpDialog.shortcuts")}>
           <Columns>
             <Column>

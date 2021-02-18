@@ -21,6 +21,7 @@ import { AppState, LibraryItem, LibraryItems } from "../types";
 import { muteFSAbortError } from "../utils";
 import { SelectedShapeActions, ShapesSwitcher, ZoomActions } from "./Actions";
 import { BackgroundPickerAndDarkModeToggle } from "./BackgroundPickerAndDarkModeToggle";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import CollabButton from "./CollabButton";
 import { ErrorDialog } from "./ErrorDialog";
 import { ExportCB, ExportDialog } from "./ExportDialog";
@@ -166,9 +167,9 @@ const LibraryMenuItems = ({
         }}
       />
 
-      <a href="https://libraries.excalidraw.com" target="_excalidraw_libraries">
+      {/* <a href="https://libraries.excalidraw.com" target="_excalidraw_libraries">
         {t("labels.libraries")}
-      </a>
+      </a> */}
     </div>,
   );
 
@@ -322,6 +323,7 @@ const LayerUI = ({
 }: LayerUIProps) => {
   const isMobile = useIsMobile();
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const renderEncryptedIcon = () => (
     <a
       className={clsx("encrypted-icon tooltip zen-mode-visibility", {
@@ -417,13 +419,13 @@ const LayerUI = ({
             {actionManager.renderAction("saveAsScene")}
             {renderExportDialog()}
             {actionManager.renderAction("clearCanvas")}
-            {onCollabButtonClick && (
+            {/* {onCollabButtonClick && (
               <CollabButton
                 isCollaborating={isCollaborating}
                 collaboratorCount={appState.collaborators.size}
                 onClick={onCollabButtonClick}
               />
-            )}
+            )} */}
           </Stack.Row>
           <BackgroundPickerAndDarkModeToggle
             actionManager={actionManager}
@@ -572,13 +574,14 @@ const LayerUI = ({
                 zoom={appState.zoom}
               />
             </Island>
-            {renderEncryptedIcon()}
+            {/* {renderEncryptedIcon()} */}
           </Section>
         </Stack.Col>
       </div>
     );
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const renderGitHubCorner = () => {
     return (
       <aside
@@ -671,7 +674,7 @@ const LayerUI = ({
       {dialogs}
       {renderFixedSideContainer()}
       {renderBottomAppMenu()}
-      {renderGitHubCorner()}
+      {/* {renderGitHubCorner()} */}
       {renderFooter()}
       {appState.scrolledOutside && (
         <button

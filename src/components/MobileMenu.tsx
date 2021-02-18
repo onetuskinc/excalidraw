@@ -11,6 +11,7 @@ import { HintViewer } from "./HintViewer";
 import { calculateScrollCenter } from "../scene";
 import { SelectedShapeActions, ShapesSwitcher } from "./Actions";
 import { Section } from "./Section";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import CollabButton from "./CollabButton";
 import { SCROLLBAR_WIDTH, SCROLLBAR_MARGIN } from "../scene/scrollbars";
 import { LockIcon } from "./LockIcon";
@@ -117,13 +118,13 @@ export const MobileMenu = ({
         {actionManager.renderAction("saveAsScene")}
         {exportButton}
         {actionManager.renderAction("clearCanvas")}
-        {onCollabButtonClick && (
+        {/* {onCollabButtonClick && (
           <CollabButton
             isCollaborating={isCollaborating}
             collaboratorCount={appState.collaborators.size}
             onClick={onCollabButtonClick}
           />
-        )}
+        )} */}
         {
           <BackgroundPickerAndDarkModeToggle
             actionManager={actionManager}
