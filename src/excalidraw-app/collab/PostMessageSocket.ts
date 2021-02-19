@@ -20,25 +20,23 @@ export default class PostMessageSocket extends EventEmitter {
         }),
         "*",
       );
-
-      const onMessage = ({ data }: MessageEvent) => {
-        try {
-          const message = JSON.parse(data);
-          if (message.type === "wp_broadcast") {
-            this.origEmit(message.eventName, ...message.args);
-          }
-        } catch (err) {
-          console.warn("Could not decode window message", err);
-        }
-      };
-
-      window.addEventListener("message", onMessage);
-
-      this.once("close", () => {
-        window.removeEventListener("message", onMessage);
-      });
-
       return true;
     };
+    const onMessage = ({ data }: MessageEvent) => {
+      try {
+        const message = JSON.parse(data);
+        if (message.type === "wb_broadcast") {
+          this.origEmit(message.eventName, ...message.args);
+        }
+      } catch (err) {
+        console.warn("Could not decode window message", err);
+      }
+    };
+
+    window.addEventListener("message", onMessage);
+
+    this.once("close", () => {
+      window.removeEventListener("message", onMessage);
+    });
   }
 }

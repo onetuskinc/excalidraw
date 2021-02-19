@@ -1,0 +1,32 @@
+<html>
+  <head>
+    <style>
+      body {
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="display: flex">
+      <iframe
+        title="frame1"
+        src="http://localhost:3000"
+        style="width: 50vw; height: 100vh; border: none"
+      ></iframe>
+      <iframe
+        title="frame2"
+        src="http://localhost:3000"
+        style="width: 50vw; height: 100vh; border: none"
+      ></iframe>
+      <script type="text/javascript">
+        const iframes = [...document.getElementsByTagName("iframe")];
+        window.onmessage = (event) => {
+          iframes.slice(1, 2).forEach((iframe) => {
+            iframe.contentWindow.postMessage(event.data, "*");
+          });
+        };
+      </script>
+    </div>
+  </body>
+</html>

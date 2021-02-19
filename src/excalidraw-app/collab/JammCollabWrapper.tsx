@@ -177,7 +177,6 @@ class CollabWrapper extends PureComponent<Props, CollabState> {
   // };
 
   openPortal = async () => {
-    debugger;
     return this.initializeSocketClient();
   };
 
@@ -260,15 +259,30 @@ class CollabWrapper extends PureComponent<Props, CollabState> {
     // All socket listeners are moving to Portal
     this.portal.socket!.on(
       "client-broadcast",
-      async (encryptedData: ArrayBuffer, iv: Uint8Array) => {
-        if (!this.portal.roomKey) {
-          return;
+      async (encryptedDataRaw: String, ivRaw: String) => {
+        const USE_ENCRYPTION = false;
+        let decryptedData;
+
+        if (USE_ENCRYPTION) {
+          const encryptedData = new Uint8Array(
+            encryptedDataRaw.split("").map((x) => x.charCodeAt(0)),
+          ).buffer;
+
+          const iv = new Uint8Array(
+            ivRaw.split("").map((x) => x.charCodeAt(0)),
+          );
+
+          if (!this.portal.roomKey) {
+            return;
+          }
+          decryptedData = await decryptAESGEM(
+            encryptedData,
+            this.portal.roomKey,
+            iv,
+          );
+        } else {
+          decryptedData = JSON.parse(encryptedDataRaw.toString());
         }
-        const decryptedData = await decryptAESGEM(
-          encryptedData,
-          this.portal.roomKey,
-          iv,
-        );
 
         switch (decryptedData.type) {
           case "INVALID_RESPONSE":

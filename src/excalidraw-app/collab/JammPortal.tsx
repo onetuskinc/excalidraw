@@ -8,9 +8,11 @@ import CollabWrapper from "./JammCollabWrapper";
 
 import { getSyncableElements } from "../../packages/excalidraw/index";
 import { ExcalidrawElement } from "../../element/types";
-import { BROADCAST, SCENE } from "../app_constants";
+import { SCENE } from "../app_constants";
 import { UserIdleState } from "./types";
 import PostMessageSocket from "./PostMessageSocket";
+
+import throttle from "lodash.throttle";
 
 class Portal {
   collab: CollabWrapper;
@@ -65,13 +67,28 @@ class Portal {
   ) {
     if (this.isOpen()) {
       const json = JSON.stringify(data);
-      const encoded = new TextEncoder().encode(json);
-      const encrypted = await encryptAESGEM(encoded, this.roomKey!);
-      this.socket!.emit(
-        volatile ? BROADCAST.SERVER_VOLATILE : BROADCAST.SERVER,
-        encrypted.data,
-        encrypted.iv,
-      );
+      const USE_ENCRYPTION = false;
+      if (USE_ENCRYPTION) {
+        const encoded = new TextEncoder().encode(json);
+        const encrypted = await encryptAESGEM(encoded, this.roomKey!);
+
+        const serializeUint8Array = (arr: Uint8Array) => {
+          return String.fromCharCode.apply(null, Array.from(arr));
+        };
+
+        const serializeArrayBuffer = (ab: ArrayBuffer) => {
+          return serializeUint8Array(new Uint8Array(ab));
+        };
+
+        this.socket!.emit(
+          // volatile ? BROADCAST.SERVER_VOLATILE : BROADCAST.SERVER,
+          "client-broadcast",
+          serializeArrayBuffer(encrypted.data),
+          serializeUint8Array(encrypted.iv),
+        );
+      } else {
+        this.socket!.emit("client-broadcast", json);
+      }
     }
   }
 
@@ -141,28 +158,32 @@ class Portal {
     }
   };
 
-  broadcastMouseLocation = (payload: {
-    pointer: SocketUpdateDataSource["MOUSE_LOCATION"]["payload"]["pointer"];
-    button: SocketUpdateDataSource["MOUSE_LOCATION"]["payload"]["button"];
-  }) => {
-    if (this.socket?.id) {
-      const data: SocketUpdateDataSource["MOUSE_LOCATION"] = {
-        type: "MOUSE_LOCATION",
-        payload: {
-          socketId: this.socket.id,
-          pointer: payload.pointer,
-          button: payload.button || "up",
-          selectedElementIds: this.collab.excalidrawAPI.getAppState()
-            .selectedElementIds,
-          username: this.collab.state.username,
-        },
-      };
-      return this._broadcastSocketData(
-        data as SocketUpdateData,
-        true, // volatile
-      );
-    }
-  };
+  broadcastMouseLocation = throttle(
+    (payload: {
+      pointer: SocketUpdateDataSource["MOUSE_LOCATION"]["payload"]["pointer"];
+      button: SocketUpdateDataSource["MOUSE_LOCATION"]["payload"]["button"];
+    }) => {
+      if (this.socket?.id) {
+        const data: SocketUpdateDataSource["MOUSE_LOCATION"] = {
+          type: "MOUSE_LOCATION",
+          payload: {
+            socketId: this.socket.id,
+            pointer: payload.pointer,
+            button: payload.button || "up",
+            selectedElementIds: this.collab.excalidrawAPI.getAppState()
+              .selectedElementIds,
+            username: this.collab.state.username,
+          },
+        };
+        return this._broadcastSocketData(
+          data as SocketUpdateData,
+          true, // volatile
+        );
+      }
+    },
+    1000 / 30,
+    { trailing: true },
+  );
 }
 
 export default Portal;
