@@ -4011,7 +4011,7 @@ declare global {
       app: InstanceType<typeof App>;
       library: typeof Library;
       collab: InstanceType<
-        typeof import("../excalidraw-app/collab/CollabWrapper").default
+        typeof import("../excalidraw-app/collab/JammCollabWrapper").default
       >;
     };
   }

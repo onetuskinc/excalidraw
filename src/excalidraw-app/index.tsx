@@ -36,13 +36,10 @@ import CollabWrapper, {
   CollabAPI,
   CollabContext,
   CollabContextConsumer,
-} from "./collab/CollabWrapper";
+} from "./collab/JammCollabWrapper";
 import { LanguageList } from "./components/LanguageList";
-import { exportToBackend, getCollaborationLinkData, loadScene } from "./data";
-import {
-  importFromLocalStorage,
-  saveToLocalStorage,
-} from "./data/localStorage";
+import { exportToBackend } from "./data";
+import { saveToLocalStorage } from "./data/localStorage";
 
 const languageDetector = new LanguageDetector();
 languageDetector.init({
@@ -67,60 +64,62 @@ const onBlur = () => {
 const initializeScene = async (opts: {
   collabAPI: CollabAPI;
 }): Promise<ImportedDataState | null> => {
-  const searchParams = new URLSearchParams(window.location.search);
-  const id = searchParams.get("id");
-  const jsonMatch = window.location.hash.match(
-    /^#json=([0-9]+),([a-zA-Z0-9_-]+)$/,
-  );
+  // const searchParams = new URLSearchParams(window.location.search);
+  // const id = searchParams.get("id");
+  // const jsonMatch = window.location.hash.match(
+  //   /^#json=([0-9]+),([a-zA-Z0-9_-]+)$/,
+  // );
 
-  const initialData = importFromLocalStorage();
+  // const initialData = importFromLocalStorage();
 
-  let scene = await loadScene(null, null, initialData);
+  // let scene = await loadScene(null, null, initialData);
 
-  let roomLinkData = getCollaborationLinkData(window.location.href);
-  const isExternalScene = !!(id || jsonMatch || roomLinkData);
-  if (isExternalScene) {
-    if (
-      // don't prompt if scene is empty
-      !scene.elements.length ||
-      // don't prompt for collab scenes because we don't override local storage
-      roomLinkData ||
-      // otherwise, prompt whether user wants to override current scene
-      window.confirm(t("alerts.loadSceneOverridePrompt"))
-    ) {
-      // Backwards compatibility with legacy url format
-      if (id) {
-        scene = await loadScene(id, null, initialData);
-      } else if (jsonMatch) {
-        scene = await loadScene(jsonMatch[1], jsonMatch[2], initialData);
-      }
-      if (!roomLinkData) {
-        window.history.replaceState({}, APP_NAME, window.location.origin);
-      }
-    } else {
-      // https://github.com/excalidraw/excalidraw/issues/1919
-      if (document.hidden) {
-        return new Promise((resolve, reject) => {
-          window.addEventListener(
-            "focus",
-            () => initializeScene(opts).then(resolve).catch(reject),
-            {
-              once: true,
-            },
-          );
-        });
-      }
+  // let roomLinkData = getCollaborationLinkData(window.location.href);
+  // const isExternalScene = !!(id || jsonMatch || roomLinkData);
+  // if (isExternalScene) {
+  //   if (
+  //     // don't prompt if scene is empty
+  //     !scene.elements.length ||
+  //     // don't prompt for collab scenes because we don't override local storage
+  //     roomLinkData ||
+  //     // otherwise, prompt whether user wants to override current scene
+  //     window.confirm(t("alerts.loadSceneOverridePrompt"))
+  //   ) {
+  //     // Backwards compatibility with legacy url format
+  //     if (id) {
+  //       scene = await loadScene(id, null, initialData);
+  //     } else if (jsonMatch) {
+  //       scene = await loadScene(jsonMatch[1], jsonMatch[2], initialData);
+  //     }
+  //     if (!roomLinkData) {
+  //       window.history.replaceState({}, APP_NAME, window.location.origin);
+  //     }
+  //   } else {
+  //     // https://github.com/excalidraw/excalidraw/issues/1919
+  //     if (document.hidden) {
+  //       return new Promise((resolve, reject) => {
+  //         window.addEventListener(
+  //           "focus",
+  //           () => initializeScene(opts).then(resolve).catch(reject),
+  //           {
+  //             once: true,
+  //           },
+  //         );
+  //       });
+  //     }
 
-      roomLinkData = null;
-      window.history.replaceState({}, APP_NAME, window.location.origin);
-    }
-  }
-  if (roomLinkData) {
-    return opts.collabAPI.initializeSocketClient(roomLinkData);
-  } else if (scene) {
-    return scene;
-  }
-  return null;
+  //     roomLinkData = null;
+  //     window.history.replaceState({}, APP_NAME, window.location.origin);
+  //   }
+  // }
+  // if (roomLinkData) {
+  //   return opts.collabAPI.initializeSocketClient(roomLinkData);
+  // } else if (scene) {
+  //   return scene;
+  // }
+  // return null;
+
+  return opts.collabAPI.initializeSocketClient();
 };
 
 function ExcalidrawWrapper() {

@@ -4,34 +4,32 @@ import {
   SocketUpdateDataSource,
 } from "../data";
 
-import CollabWrapper from "./CollabWrapper";
+import CollabWrapper from "./JammCollabWrapper";
 
 import { getSyncableElements } from "../../packages/excalidraw/index";
 import { ExcalidrawElement } from "../../element/types";
 import { BROADCAST, SCENE } from "../app_constants";
 import { UserIdleState } from "./types";
+import PostMessageSocket from "./PostMessageSocket";
 
 class Portal {
   collab: CollabWrapper;
-  socket: SocketIOClient.Socket | null = null;
+  socket: PostMessageSocket | null = null;
   socketInitialized: boolean = false; // we don't want the socket to emit any updates until it is fully initialized
-  roomId: string | null = null;
-  roomKey: string | null = null;
+  roomKey: string | null = "LublxNGPyPlQnJxdPX3iDA";
   broadcastedElementVersions: Map<string, number> = new Map();
 
   constructor(collab: CollabWrapper) {
     this.collab = collab;
   }
 
-  open(socket: SocketIOClient.Socket, id: string, key: string) {
+  open(socket: PostMessageSocket) {
     this.socket = socket;
-    this.roomId = id;
-    this.roomKey = key;
 
     // Initialize socket listeners
     this.socket.on("init-room", () => {
       if (this.socket) {
-        this.socket.emit("join-room", this.roomId);
+        this.socket.emit("join-room");
       }
     });
     this.socket.on("new-user", async (_socketId: string) => {
@@ -52,19 +50,13 @@ class Portal {
     }
     this.socket.close();
     this.socket = null;
-    this.roomId = null;
     this.roomKey = null;
     this.socketInitialized = false;
     this.broadcastedElementVersions = new Map();
   }
 
   isOpen() {
-    return !!(
-      this.socketInitialized &&
-      this.socket &&
-      this.roomId &&
-      this.roomKey
-    );
+    return !!(this.socketInitialized && this.socket && this.roomKey);
   }
 
   async _broadcastSocketData(
@@ -77,7 +69,6 @@ class Portal {
       const encrypted = await encryptAESGEM(encoded, this.roomKey!);
       this.socket!.emit(
         volatile ? BROADCAST.SERVER_VOLATILE : BROADCAST.SERVER,
-        this.roomId,
         encrypted.data,
         encrypted.iv,
       );
@@ -126,7 +117,7 @@ class Portal {
     if (syncAll && this.collab.isCollaborating) {
       await Promise.all([
         broadcastPromise,
-        this.collab.saveCollabRoomToFirebase(syncableElements),
+        // this.collab.saveCollabRoomToFirebase(syncableElements),
       ]);
     } else {
       await broadcastPromise;

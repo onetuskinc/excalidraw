@@ -17,29 +17,19 @@ import {
   SCENE,
   SYNC_FULL_SCENE_INTERVAL_MS,
 } from "../app_constants";
-import {
-  decryptAESGEM,
-  generateCollaborationLinkData,
-  getCollaborationLink,
-  SocketUpdateDataSource,
-  SOCKET_SERVER,
-} from "../data";
-import {
-  isSavedToFirebase,
-  loadFromFirebase,
-  saveToFirebase,
-} from "../data/firebase";
+import { decryptAESGEM, SocketUpdateDataSource } from "../data";
 import {
   importUsernameFromLocalStorage,
   saveUsernameToLocalStorage,
   STORAGE_KEYS,
 } from "../data/localStorage";
-import Portal from "./Portal";
+import Portal from "./JammPortal";
 import RoomDialog from "./RoomDialog";
 import { createInverseContext } from "../../createInverseContext";
 import { t } from "../../i18n";
 import { UserIdleState } from "./types";
 import { IDLE_THRESHOLD, ACTIVE_THRESHOLD } from "../../constants";
+import PostMessageSocket from "./PostMessageSocket";
 
 interface CollabState {
   modalIsShown: boolean;
@@ -145,54 +135,54 @@ class CollabWrapper extends PureComponent<Props, CollabState> {
   };
 
   private beforeUnload = withBatchedUpdates((event: BeforeUnloadEvent) => {
-    const syncableElements = getSyncableElements(
-      this.getSceneElementsIncludingDeleted(),
-    );
+    // const syncableElements = getSyncableElements(
+    //   this.getSceneElementsIncludingDeleted(),
+    // );
 
-    if (
-      this.isCollaborating &&
-      !isSavedToFirebase(this.portal, syncableElements)
-    ) {
-      // this won't run in time if user decides to leave the site, but
-      //  the purpose is to run in immediately after user decides to stay
-      this.saveCollabRoomToFirebase(syncableElements);
+    // if (
+    //   this.isCollaborating &&
+    //   !isSavedToFirebase(this.portal, syncableElements)
+    // ) {
+    //   // this won't run in time if user decides to leave the site, but
+    //   //  the purpose is to run in immediately after user decides to stay
+    //   this.saveCollabRoomToFirebase(syncableElements);
 
-      event.preventDefault();
-      // NOTE: modern browsers no longer allow showing a custom message here
-      event.returnValue = "";
-    }
+    //   event.preventDefault();
+    //   // NOTE: modern browsers no longer allow showing a custom message here
+    //   event.returnValue = "";
+    // }
 
-    if (this.isCollaborating || this.portal.roomId) {
+    if (this.isCollaborating) {
       try {
         localStorage?.setItem(
           STORAGE_KEYS.LOCAL_STORAGE_KEY_COLLAB_FORCE_FLAG,
           JSON.stringify({
             timestamp: Date.now(),
-            room: this.portal.roomId,
           }),
         );
       } catch {}
     }
   });
 
-  saveCollabRoomToFirebase = async (
-    syncableElements: ExcalidrawElement[] = getSyncableElements(
-      this.excalidrawAPI.getSceneElementsIncludingDeleted(),
-    ),
-  ) => {
-    try {
-      await saveToFirebase(this.portal, syncableElements);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // saveCollabRoomToFirebase = async (
+  //   syncableElements: ExcalidrawElement[] = getSyncableElements(
+  //     this.excalidrawAPI.getSceneElementsIncludingDeleted(),
+  //   ),
+  // ) => {
+  //   try {
+  //     await saveToFirebase(this.portal, syncableElements);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   openPortal = async () => {
-    return this.initializeSocketClient(null);
+    debugger;
+    return this.initializeSocketClient();
   };
 
   closePortal = () => {
-    this.saveCollabRoomToFirebase();
+    // this.saveCollabRoomToFirebase();
     if (window.confirm(t("alerts.collabStopOverridePrompt"))) {
       window.history.pushState({}, APP_NAME, window.location.origin);
       this.destroySocketClient();
@@ -213,67 +203,52 @@ class CollabWrapper extends PureComponent<Props, CollabState> {
     this.portal.close();
   };
 
-  private initializeSocketClient = async (
-    existingRoomLinkData: null | { roomId: string; roomKey: string },
-  ): Promise<ImportedDataState | null> => {
-    if (this.portal.socket) {
-      return null;
-    }
-
-    let roomId;
-    let roomKey;
-
-    if (existingRoomLinkData) {
-      ({ roomId, roomKey } = existingRoomLinkData);
-    } else {
-      ({ roomId, roomKey } = await generateCollaborationLinkData());
-      window.history.pushState(
-        {},
-        APP_NAME,
-        getCollaborationLink({ roomId, roomKey }),
-      );
-    }
-
+  private initializeSocketClient = async (): Promise<ImportedDataState | null> => {
     const scenePromise = resolvablePromise<ImportedDataState | null>();
 
     this.isCollaborating = true;
 
-    const { default: socketIOClient }: any = await import(
-      /* webpackChunkName: "socketIoClient" */ "socket.io-client"
-    );
+    // build up a fake socket for portal?
+    // change it up so it knows what's going on too?
 
-    this.portal.open(socketIOClient(SOCKET_SERVER), roomId, roomKey);
+    // const { default: socketIOClient }: any = await import(
+    //   /* webpackChunkName: "socketIoClient" */ "socket.io-client"
+    // );
 
-    if (existingRoomLinkData) {
-      this.excalidrawAPI.resetScene();
+    const socket = new PostMessageSocket();
 
-      try {
-        const elements = await loadFromFirebase(
-          roomId,
-          roomKey,
-          this.portal.socket,
-        );
-        if (elements) {
-          scenePromise.resolve({
-            elements,
-          });
-        }
-      } catch (error) {
-        // log the error and move on. other peers will sync us the scene.
-        console.error(error);
-      }
-    } else {
-      const elements = this.excalidrawAPI.getSceneElements();
-      // remove deleted elements from elements array & history to ensure we don't
-      // expose potentially sensitive user data in case user manually deletes
-      // existing elements (or clears scene), which would otherwise be persisted
-      // to database even if deleted before creating the room.
-      this.excalidrawAPI.history.clear();
-      this.excalidrawAPI.updateScene({
-        elements,
-        commitToHistory: true,
-      });
-    }
+    this.portal.open(socket);
+
+    // if (existingRoomLinkData) {
+    //   this.excalidrawAPI.resetScene();
+
+    //   try {
+    //     const elements = await loadFromFirebase(
+    //       roomId,
+    //       roomKey,
+    //       this.portal.socket,
+    //     );
+    //     if (elements) {
+    //       scenePromise.resolve({
+    //         elements,
+    //       });
+    //     }
+    //   } catch (error) {
+    //     // log the error and move on. other peers will sync us the scene.
+    //     console.error(error);
+    //   }
+    // } else {
+    const elements = this.excalidrawAPI.getSceneElements();
+    // remove deleted elements from elements array & history to ensure we don't
+    // expose potentially sensitive user data in case user manually deletes
+    // existing elements (or clears scene), which would otherwise be persisted
+    // to database even if deleted before creating the room.
+    this.excalidrawAPI.history.clear();
+    this.excalidrawAPI.updateScene({
+      elements,
+      commitToHistory: true,
+    });
+    // }
 
     // fallback in case you're not alone in the room but still don't receive
     // initial SCENE_UPDATE message
@@ -355,10 +330,7 @@ class CollabWrapper extends PureComponent<Props, CollabState> {
       },
     );
 
-    this.portal.socket!.on("first-in-room", () => {
-      if (this.portal.socket) {
-        this.portal.socket.off("first-in-room");
-      }
+    this.portal.socket!.once("first-in-room", () => {
       this.initializeSocket();
       scenePromise.resolve(null);
     });
