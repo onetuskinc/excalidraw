@@ -22,7 +22,7 @@
       <script type="text/javascript">
         const iframes = [...document.getElementsByTagName("iframe")];
         window.onmessage = (event) => {
-          iframes.slice(1, 2).forEach((iframe) => {
+          iframes.forEach((iframe) => {
             iframe.contentWindow.postMessage(event.data, "*");
           });
         };
