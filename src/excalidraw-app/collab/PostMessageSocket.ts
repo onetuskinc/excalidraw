@@ -5,26 +5,32 @@ export default class PostMessageSocket extends EventEmitter {
   origEmit: (eventName: string, ...args: any[]) => boolean;
   id = nanoid();
   close() {
-    this.emit("close");
+    this.origEmit("close");
   }
   constructor() {
     super();
     this.origEmit = this.emit;
+    if (window === window.parent) {
+      this.emit = (eventName: string | symbol, ...args: any[]): boolean => {
+        return true;
+      };
+      console.warn("We are the parent, bail");
+      return;
+    }
 
     this.emit = (eventName: string | symbol, ...args: any[]): boolean => {
       window.parent.postMessage(
-        JSON.stringify({
+        {
           type: "wb_broadcast",
           eventName,
           args,
-        }),
+        },
         "*",
       );
       return true;
     };
-    const onMessage = ({ data }: MessageEvent) => {
+    const onMessage = ({ data: message }: MessageEvent) => {
       try {
-        const message = JSON.parse(data);
         if (message.type === "wb_broadcast") {
           this.origEmit(message.eventName, ...message.args);
         }
