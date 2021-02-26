@@ -13,7 +13,7 @@ import {
 import { Collaborator, Gesture } from "../../types";
 import { resolvablePromise, withBatchedUpdates } from "../../utils";
 import {
-  INITIAL_SCENE_UPDATE_TIMEOUT,
+  // INITIAL_SCENE_UPDATE_TIMEOUT,
   SCENE,
   SYNC_FULL_SCENE_INTERVAL_MS,
 } from "../app_constants";
@@ -251,10 +251,10 @@ class CollabWrapper extends PureComponent<Props, CollabState> {
 
     // fallback in case you're not alone in the room but still don't receive
     // initial SCENE_UPDATE message
-    this.socketInitializationTimer = setTimeout(() => {
-      this.initializeSocket();
-      scenePromise.resolve(null);
-    }, INITIAL_SCENE_UPDATE_TIMEOUT);
+    // this.socketInitializationTimer = setTimeout(() => {
+    //   this.initializeSocket();
+    //   scenePromise.resolve(null);
+    // }, INITIAL_SCENE_UPDATE_TIMEOUT);
 
     // All socket listeners are moving to Portal
     this.portal.socket!.on(
