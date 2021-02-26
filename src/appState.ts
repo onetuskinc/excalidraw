@@ -8,12 +8,21 @@ import { t } from "./i18n";
 import { AppState, NormalizedZoomValue } from "./types";
 import { getDateTime } from "./utils";
 
+const getAppearance = (suggested = "light"): "light" | "dark" => {
+  if (["light", "dark"].includes(suggested)) {
+    return suggested as "light" | "dark";
+  }
+  return "light";
+};
+
 export const getDefaultAppState = (): Omit<
   AppState,
   "offsetTop" | "offsetLeft"
 > => {
   return {
-    appearance: "light",
+    appearance: getAppearance(
+      new URL(window.location.href).searchParams.get("appearance") || undefined,
+    ),
     collaborators: new Map(),
     currentChartType: "bar",
     currentItemBackgroundColor: "transparent",
