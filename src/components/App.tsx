@@ -350,6 +350,14 @@ class App extends React.Component<ExcalidrawProps, AppState> {
 
     this.actionManager.registerAction(createUndoAction(history));
     this.actionManager.registerAction(createRedoAction(history));
+
+    window.addEventListener("message", ({ data }) => {
+      try {
+        if (data.type === "setAppearance") {
+          this.setAppState({ appearance: data.appearance });
+        }
+      } catch (err) {}
+    });
   }
 
   private renderCanvas() {
