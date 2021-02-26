@@ -206,37 +206,10 @@ class CollabWrapper extends PureComponent<Props, CollabState> {
     const scenePromise = resolvablePromise<ImportedDataState | null>();
 
     this.isCollaborating = true;
-
-    // build up a fake socket for portal?
-    // change it up so it knows what's going on too?
-
-    // const { default: socketIOClient }: any = await import(
-    //   /* webpackChunkName: "socketIoClient" */ "socket.io-client"
-    // );
-
     const socket = new PostMessageSocket();
 
     this.portal.open(socket);
 
-    // if (existingRoomLinkData) {
-    //   this.excalidrawAPI.resetScene();
-
-    //   try {
-    //     const elements = await loadFromFirebase(
-    //       roomId,
-    //       roomKey,
-    //       this.portal.socket,
-    //     );
-    //     if (elements) {
-    //       scenePromise.resolve({
-    //         elements,
-    //       });
-    //     }
-    //   } catch (error) {
-    //     // log the error and move on. other peers will sync us the scene.
-    //     console.error(error);
-    //   }
-    // } else {
     const elements = this.excalidrawAPI.getSceneElements();
     // remove deleted elements from elements array & history to ensure we don't
     // expose potentially sensitive user data in case user manually deletes
@@ -247,14 +220,6 @@ class CollabWrapper extends PureComponent<Props, CollabState> {
       elements,
       commitToHistory: true,
     });
-    // }
-
-    // fallback in case you're not alone in the room but still don't receive
-    // initial SCENE_UPDATE message
-    // this.socketInitializationTimer = setTimeout(() => {
-    //   this.initializeSocket();
-    //   scenePromise.resolve(null);
-    // }, INITIAL_SCENE_UPDATE_TIMEOUT);
 
     // All socket listeners are moving to Portal
     this.portal.socket!.on(
@@ -288,16 +253,11 @@ class CollabWrapper extends PureComponent<Props, CollabState> {
           case "INVALID_RESPONSE":
             return;
           case SCENE.INIT: {
-            // if (!this.portal.socketInitialized) {
-            // this.initializeSocket();
             const remoteElements = decryptedData.payload.elements;
             const reconciledElements = this.reconcileElements(remoteElements);
             this.handleRemoteSceneUpdate(reconciledElements, {
               init: true,
             });
-            // noop if already resolved via init from firebase
-            // scenePromise.resolve({ elements: reconciledElements });
-            // }
             break;
           }
           case SCENE.UPDATE:

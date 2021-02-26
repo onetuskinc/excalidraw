@@ -20,13 +20,9 @@ After installation you will see a folder `excalidraw-assets` in `dist` directory
 
 Move the folder `excalidraw-assets` to the path where your assets are served.
 
-By default it will try to load the files from `{rootUrl}/excalidraw-assets/`
+By default it will try to load the files from `https://unpkg.com/@excalidraw/excalidraw/{currentVersion}/dist/`
 
-With **Webpack**, if you want to load the files from different path you can use <pre><a href="https://webpack.js.org/guides/public-path/#on-the-fly">`__webpack_public_path__`</a></pre>.
-
-With **create-react-app**, the assets can be served from `public/static/js/excalidraw-assets`since CRA tries to load the assets from `{rootUrl}/static/js` path by default.
-
-You can update the value of `PUBLIC_URL` if you want to serve it from a different URL.
+If you want to load assets from a different path you can set a variable `window.EXCALIDRAW_ASSET_PATH` to the url from where you want to load the assets.
 
 ### Demo
 
@@ -286,10 +282,11 @@ Here you can try saving the data to your backend or local storage for example.
 
 This helps to load Excalidraw with `initialData`. It must be an object or a [promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/Promise) which resolves to an object containing the below optional fields.
 
-| name | type |
-| --- | --- |
-| elements | [ExcalidrawElement[]](https://github.com/excalidraw/excalidraw/blob/master/src/element/types.ts#L78) |
-| appState | [AppState](https://github.com/excalidraw/excalidraw/blob/master/src/types.ts#L37) |
+| Name | Type | Descrption |
+| --- | --- | --- |
+| `elements` | [ExcalidrawElement[]](https://github.com/excalidraw/excalidraw/blob/master/src/element/types.ts#L78) | The elements with which Excalidraw should be mounted. |
+| `appState` | [AppState](https://github.com/excalidraw/excalidraw/blob/master/src/types.ts#L37) | The App state with which Excalidraw should be mounted. |
+| `scrollToCenter` | boolean | This attribute implies whether to scroll to the nearest element to center once Excalidraw is mounted. By default, it will not scroll the nearest element to the center. Make sure you pass `initialData.appState.scrollX` and `initialData.appState.scrollY` when `scrollToCenter` is false so that scroll positions are retained |
 
 ```json
 {

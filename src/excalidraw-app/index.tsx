@@ -13,7 +13,7 @@ import { ExcalidrawImperativeAPI } from "../components/App";
 import { ErrorDialog } from "../components/ErrorDialog";
 import { TopErrorBoundary } from "../components/TopErrorBoundary";
 import { APP_NAME, EVENT, TITLE_TIMEOUT, VERSION_TIMEOUT } from "../constants";
-import { ImportedDataState } from "../data/types";
+import { /* DataState, */ ImportedDataState } from "../data/types";
 import {
   ExcalidrawElement,
   NonDeletedExcalidrawElement,
@@ -72,7 +72,11 @@ const initializeScene = async (opts: {
 
   // const initialData = importFromLocalStorage();
 
-  // let scene = await loadScene(null, null, initialData);
+  // let scene: DataState & { scrollToCenter?: boolean } = await loadScene(
+  //   null,
+  //   null,
+  //   initialData,
+  // );
 
   // let roomLinkData = getCollaborationLinkData(window.location.href);
   // const isExternalScene = !!(id || jsonMatch || roomLinkData);
@@ -91,6 +95,7 @@ const initializeScene = async (opts: {
   //     } else if (jsonMatch) {
   //       scene = await loadScene(jsonMatch[1], jsonMatch[2], initialData);
   //     }
+  //     scene.scrollToCenter = true;
   //     if (!roomLinkData) {
   //       window.history.replaceState({}, APP_NAME, window.location.origin);
   //     }
@@ -107,17 +112,6 @@ const initializeScene = async (opts: {
   //         );
   //       });
   //     }
-
-  //     roomLinkData = null;
-  //     window.history.replaceState({}, APP_NAME, window.location.origin);
-  //   }
-  // }
-  // if (roomLinkData) {
-  //   return opts.collabAPI.initializeSocketClient(roomLinkData);
-  // } else if (scene) {
-  //   return scene;
-  // }
-  // return null;
 
   return opts.collabAPI.initializeSocketClient();
 };
