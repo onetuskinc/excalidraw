@@ -288,16 +288,16 @@ class CollabWrapper extends PureComponent<Props, CollabState> {
           case "INVALID_RESPONSE":
             return;
           case SCENE.INIT: {
-            if (!this.portal.socketInitialized) {
-              this.initializeSocket();
-              const remoteElements = decryptedData.payload.elements;
-              const reconciledElements = this.reconcileElements(remoteElements);
-              this.handleRemoteSceneUpdate(reconciledElements, {
-                init: true,
-              });
-              // noop if already resolved via init from firebase
-              scenePromise.resolve({ elements: reconciledElements });
-            }
+            // if (!this.portal.socketInitialized) {
+            // this.initializeSocket();
+            const remoteElements = decryptedData.payload.elements;
+            const reconciledElements = this.reconcileElements(remoteElements);
+            this.handleRemoteSceneUpdate(reconciledElements, {
+              init: true,
+            });
+            // noop if already resolved via init from firebase
+            // scenePromise.resolve({ elements: reconciledElements });
+            // }
             break;
           }
           case SCENE.UPDATE:
@@ -344,10 +344,10 @@ class CollabWrapper extends PureComponent<Props, CollabState> {
       },
     );
 
-    this.portal.socket!.once("first-in-room", () => {
-      this.initializeSocket();
-      scenePromise.resolve(null);
-    });
+    // this.portal.socket!.once("first-in-room", () => {
+    this.initializeSocket();
+    scenePromise.resolve(null);
+    // });
 
     this.initializeIdleDetector();
 
