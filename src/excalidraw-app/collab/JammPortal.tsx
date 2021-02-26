@@ -44,6 +44,7 @@ class Portal {
     this.socket.on("room-user-change", (clients: string[]) => {
       this.collab.setCollaborators(clients);
     });
+    this.socket.emit("new-user");
   }
 
   close() {
